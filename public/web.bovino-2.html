@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Bovino - Zetta</title>
+    <script>
+        window.API_BASE_URL = window.location.origin;
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f4f6f8; padding:20px; }
+        .card { max-width:520px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08);} 
+        .form-group{margin-bottom:12px}
+        label{display:block;margin-bottom:6px;font-weight:600}
+        input, select{width:100%;padding:10px;border-radius:6px;border:1px solid #ccc}
+        button{padding:10px 14px;border:none;border-radius:6px;background:#28a745;color:#fff;font-weight:700}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Cadastrar Bovino</h2>
+        <p>Cadastro simples e direto — selecione a fazenda e preencha os dados principais.</p>
+
+        <div class="form-group">
+            <label for="id_fazenda">Fazenda</label>
+            <select id="id_fazenda"></select>
+        </div>
+        <div class="form-group">
+            <label for="numero_brinco">Número do Brinco</label>
+            <input id="numero_brinco" />
+        </div>
+        <div class="form-group">
+            <label for="peso">Peso (kg)</label>
+            <input id="peso" type="number" step="0.01" />
+        </div>
+        <div class="form-group">
+            <label for="data_nascimento">Data de Nascimento</label>
+            <input id="data_nascimento" type="date" />
+        </div>
+        <div class="form-group">
+            <label for="raca">Raça</label>
+            <input id="raca" />
+        </div>
+
+        <button id="submitBtn">Cadastrar</button>
+        <p id="msg" style="margin-top:12px;font-weight:600"></p>
+    </div>
+
+<script>
+async function loadFazendas() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/fazendas/${getCookie('id_usuario')}`);
+        const data = await res.json();
+        const sel = document.getElementById('id_fazenda');
+        sel.innerHTML = '';
+        if (data.success && data.fazendas && data.fazendas.length>0) {
+            data.fazendas.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.id_fazenda; opt.textContent = f.nome_fazenda;
+                sel.appendChild(opt);
+            });
+        } else {
+            const opt = document.createElement('option'); opt.value=''; opt.textContent='Nenhuma fazenda'; sel.appendChild(opt);
+        }
+    } catch(e){ console.error(e); }
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0;i<ca.length;i++){let c=ca[i];while(c.charAt(0)==' ')c=c.substring(1,c.length);if(c.indexOf(nameEQ)==0)return c.substring(nameEQ.length,c.length)}
+    return null;
+}
+
+document.getElementById('submitBtn').addEventListener('click', async ()=>{
+    const id_fazenda = document.getElementById('id_fazenda').value;
+    const numero_brinco = document.getElementById('numero_brinco').value.trim();
+    const peso = document.getElementById('peso').value;
+    const data_nascimento = document.getElementById('data_nascimento').value;
+    const raca = document.getElementById('raca').value.trim();
+    const msg = document.getElementById('msg');
+    if(!id_fazenda || !numero_brinco || !peso || !data_nascimento){ msg.textContent = 'Preencha os campos obrigatórios'; return; }
+    try{
+        const res = await fetch(`${API_BASE_URL}/cadastrar-bovino`, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ id_fazenda, numero_brinco, peso, data_nascimento, raca })
+        });
+        const j = await res.json();
+        if(res.ok){ msg.style.color='green'; msg.textContent = j.message || 'Cadastrado'; setTimeout(()=>location.href=`/bovinos.html?id_fazenda=${id_fazenda}`,800); }
+        else{ msg.style.color='red'; msg.textContent = j.message||'Erro'; }
+    }catch(err){ console.error(err); msg.style.color='red'; msg.textContent='Erro ao conectar'; }
+});
+
+// se houver query param id_fazenda preselect
+(function(){
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id_fazenda');
+    loadFazendas().then(()=>{ if(id){ const sel=document.getElementById('id_fazenda'); for(const o of sel.options){ if(o.value==id){ sel.value=id; break; } } } });
+})();
+</script>
+</body>
+</html>

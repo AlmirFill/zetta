@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Bovinos - Zetta</title>
+    <script>window.API_BASE_URL = window.location.origin;</script>
+    <style>
+        body{font-family:Arial,helvetica,sans-serif;background:#f4f6f8;padding:20px}
+        .card{max-width:900px;margin:auto;background:#fff;padding:18px;border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,0.06)}
+        table{width:100%;border-collapse:collapse}
+        th,td{border-bottom:1px solid #efefef;padding:10px;text-align:left}
+        .controls{display:flex;gap:8px;margin-bottom:12px}
+        .controls select,input{padding:8px;border-radius:6px;border:1px solid #ccc}
+        .btn{padding:8px 12px;border-radius:6px;background:#007bff;color:#fff;border:none;cursor:pointer}
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Bovinos</h2>
+    <div class="controls">
+        <select id="selFazenda"></select>
+        <button id="btnRefresh" class="btn">Atualizar</button>
+        <button id="btnNew" class="btn" style="background:#28a745">Novo Bovino</button>
+    </div>
+
+    <table id="tbl">
+        <thead><tr><th>ID</th><th>Brinco</th><th>Peso</th><th>Data Nasc.</th><th>Raça</th><th>Data Cadastro</th></tr></thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+function getCookie(name){const nameEQ=name+"=";const ca=document.cookie.split(';');for(let i=0;i<ca.length;i++){let c=ca[i];while(c.charAt(0)==' ')c=c.substring(1,c.length);if(c.indexOf(nameEQ)==0)return c.substring(nameEQ.length,c.length)}return null}
+
+async function loadFazendas(){
+    const uid = getCookie('id_usuario');
+    const sel = document.getElementById('selFazenda'); sel.innerHTML='';
+    try{
+        const res = await fetch(`${API_BASE_URL}/fazendas/${uid}`);
+        const j = await res.json();
+        if(res.ok && j.success){ j.fazendas.forEach(f=>{const o=document.createElement('option'); o.value=f.id_fazenda; o.textContent=f.nome_fazenda; sel.appendChild(o);});}
+    }catch(e){console.error(e);}
+}
+
+async function loadBovinos(id_fazenda){
+    const tbody = document.querySelector('#tbl tbody'); tbody.innerHTML='';
+    if(!id_fazenda) return;
+    try{
+        const res = await fetch(`${API_BASE_URL}/bovinos/${id_fazenda}`);
+        const j = await res.json();
+        if(res.ok){ j.forEach(b=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${b.id_bovino}</td><td>${b.numero_brinco}</td><td>${b.peso}</td><td>${b.data_nascimento||''}</td><td>${b.raca||''}</td><td>${b.data_cadastro||''}</td>`; tbody.appendChild(tr); }); }
+    }catch(e){console.error(e);}
+}
+
+document.getElementById('btnRefresh').addEventListener('click', ()=>{ const id=document.getElementById('selFazenda').value; loadBovinos(id); });
+document.getElementById('btnNew').addEventListener('click', ()=>{ const id=document.getElementById('selFazenda').value; window.location.href=`/web.bovino-2.html?id_fazenda=${id}`; });
+
+document.getElementById('selFazenda').addEventListener('change', (e)=>{ loadBovinos(e.target.value); });
+
+// init
+(async function(){ await loadFazendas(); const params = new URLSearchParams(window.location.search); const fid = params.get('id_fazenda'); if(fid){ document.getElementById('selFazenda').value=fid; } const id=document.getElementById('selFazenda').value; if(id) loadBovinos(id); })();
+</script>
+</body>
+</html>
