@@ -3,6 +3,13 @@ const mysql = require('mysql2/promise');
 const path = require('path');
 const cors = require('cors');
 
+// Carrega variáveis de ambiente de um arquivo .env em desenvolvimento
+try {
+    require('dotenv').config();
+} catch (e) {
+    // noop - dotenv é opcional em produção (Render fornece env vars)
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -22,12 +29,54 @@ const dbConfig = {
 };
 
 // Criando pool de conexões (melhor que abrir/fechar toda hora)
+// Cria pool de conexões com suporte a DATABASE_URL ou variáveis separadas
+function parseDatabaseUrl(databaseUrl) {
+    try {
+        const url = new URL(databaseUrl);
+        return {
+            host: url.hostname,
+            port: url.port ? Number(url.port) : undefined,
+            user: url.username,
+            password: url.password,
+            database: url.pathname ? url.pathname.replace(/^\//, '') : undefined
+        };
+    } catch (err) {
+        console.warn('Falha ao parsear DATABASE_URL:', err.message);
+        return null;
+    }
+}
+
 let pool;
-// Se houver uma DATABASE_URL (ex: fornecida pelo Railway), usa-a; senão usa config separada
-if (process.env.DATABASE_URL) {
-    pool = mysql.createPool(process.env.DATABASE_URL);
+const parsed = process.env.DATABASE_URL ? parseDatabaseUrl(process.env.DATABASE_URL) : null;
+if (parsed) {
+    const cfg = {
+        host: process.env.DB_HOST || parsed.host,
+        port: process.env.DB_PORT ? Number(process.env.DB_PORT) : parsed.port,
+        user: process.env.DB_USER || parsed.user,
+        password: process.env.DB_PASSWORD || parsed.password,
+        database: process.env.DB_NAME || parsed.database,
+        waitForConnections: true,
+        connectionLimit: Number(process.env.DB_CONN_LIMIT) || 10,
+        queueLimit: 0
+    };
+
+    // Se precisar forçar SSL (Railway às vezes requer), use DB_SSL=true
+    if (process.env.DB_SSL === 'true') {
+        cfg.ssl = { rejectUnauthorized: false };
+    }
+
+    pool = mysql.createPool(cfg);
 } else {
-    pool = mysql.createPool(dbConfig);
+    pool = mysql.createPool({
+        host: process.env.DB_HOST || dbConfig.host,
+        port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+        user: process.env.DB_USER || dbConfig.user,
+        password: process.env.DB_PASSWORD || dbConfig.password,
+        database: process.env.DB_NAME || dbConfig.database,
+        waitForConnections: true,
+        connectionLimit: Number(process.env.DB_CONN_LIMIT) || 10,
+        queueLimit: 0
+    });
 }
 
 //-------------------------------------------------------------------------------------

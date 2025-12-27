@@ -130,7 +130,7 @@
 
     <button id="install-btn">📥 Instalar App</button>
 
-    <script src="/app.js"></script>
+    <script>
         // Registra o Service Worker para funcionalidade offline
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js')
@@ -141,9 +141,6 @@
                     console.log('Erro ao registrar Service Worker:', error);
                 });
         }
-    </script>
-
-    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const fazendasList = document.getElementById('fazendas-list');
             const loadingMessage = document.getElementById('loading-message');
