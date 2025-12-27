@@ -170,7 +170,7 @@
                 }
 
                 try {
-                    const response = await fetch(`http://localhost:3000/fazendas/${usuario_id}`);
+                    const response = await fetch(`${API_BASE_URL}/fazendas/${usuario_id}`);
                     const result = await response.json();
 
                     loadingMessage.style.display = 'none';

@@ -31,12 +31,13 @@
     </table>
 
     <script>
+        const API_BASE_URL = window.location.origin;
         const tabelaUsuarios = document.getElementById('tabelaUsuarios');
 
         // Função para buscar e listar os usuários
         async function listarUsuarios() {
             try {
-                const response = await fetch('http://localhost:3000/usuarios');
+                const response = await fetch(`${API_BASE_URL}/usuarios`);
                 const data = await response.json();
 
                 if (data.success) {
@@ -69,7 +70,7 @@
         // Função para alterar o status do usuário
         async function alterarStatus(id, novoStatus) {
             try {
-                const response = await fetch(`http://localhost:3000/usuarios/${id}/status`, {
+                const response = await fetch(`${API_BASE_URL}/usuarios/${id}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status_conta: novoStatus })

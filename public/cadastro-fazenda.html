@@ -162,7 +162,8 @@
                 const data_ultima_pesagem = document.getElementById('data_ultima_pesagem').value; // Já está no formato YYYY-MM-DD
 
                 try {
-                    const response = await fetch('http://localhost:3000/cadastrar-fazenda', {
+                    const API_BASE_URL = window.location.origin;
+                    const response = await fetch(`${API_BASE_URL}/cadastrar-fazenda`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
