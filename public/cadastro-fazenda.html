@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Fazenda</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Cadastrar Nova Fazenda</h1>
+        <form id="farm-form">
+            <div class="form-group">
+                <label for="nome_fazenda">Nome da Fazenda</label>
+                <input type="text" id="nome_fazenda" name="nome_fazenda" required>
+            </div>
+            <div class="form-group">
+                <label for="cnpj">CNPJ</label>
+                <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00">
+            </div>
+            <div class="form-group">
+                <label for="endereco">Endereço</label>
+                <input type="text" id="endereco" name="endereco">
+            </div>
+            <div class="form-group">
+                <label for="data_ultima_pesagem">Data da Última Pesagem</label>
+                <input type="date" id="data_ultima_pesagem" name="data_ultima_pesagem">
+            </div>
+            <button type="submit">Cadastrar Fazenda</button>
+        </form>
+        <div id="message-container" class="message"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('farm-form');
+            const messageContainer = document.getElementById('message-container');
+            const cnpjInput = document.getElementById('cnpj');
+
+            // Função para ler um cookie
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+            // Máscara para o campo de CNPJ
+            cnpjInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+                if (value.length > 14) value = value.slice(0, 14);
+
+                let formattedValue = '';
+                if (value.length > 0) {
+                    formattedValue = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})?$/, '$1.$2.$3/$4-$5');
+                    e.target.value = formattedValue;
+                }
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Pega o ID do usuário dos cookies
+                const id_usuario = getCookie('id_usuario');
+                
+                if (!id_usuario) {
+                    showMessage('Usuário não autenticado. Faça login novamente.', 'error');
+                    return;
+                }
+
+                const nome_fazenda = document.getElementById('nome_fazenda').value;
+                const cnpj = cnpjInput.value.replace(/\D/g, ''); // Remove a máscara antes de enviar
+                const endereco = document.getElementById('endereco').value;
+                const data_ultima_pesagem = document.getElementById('data_ultima_pesagem').value; // Já está no formato YYYY-MM-DD
+
+                try {
+                    const response = await fetch('http://localhost:3000/cadastrar-fazenda', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id_usuario: id_usuario,
+                            nome_fazenda: nome_fazenda,
+                            cnpj: cnpj,
+                            endereco: endereco,
+                            data_ultima_pesagem: data_ultima_pesagem
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        showMessage(result.message, 'success');
+                        form.reset(); // Limpa o formulário em caso de sucesso
+                    } else {
+                        showMessage(result.message, 'error');
+                    }
+
+                } catch (error) {
+                    console.error('Erro na requisição:', error);
+                    showMessage('Erro ao conectar com o servidor.', 'error');
+                }
+            });
+
+            function showMessage(message, type) {
+                messageContainer.textContent = message;
+                messageContainer.className = `message ${type}`;
+                messageContainer.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>

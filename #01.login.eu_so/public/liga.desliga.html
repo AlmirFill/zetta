@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { cursor: pointer; padding: 5px 10px; border-radius: 4px; border: none; }
+        .btn-ativar { background-color: #4CAF50; color: white; }
+        .btn-desativar { background-color: #f44336; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Gerenciar Contas de Usuários</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Status da Conta</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaUsuarios">
+            </tbody>
+    </table>
+
+    <script>
+        const tabelaUsuarios = document.getElementById('tabelaUsuarios');
+
+        // Função para buscar e listar os usuários
+        async function listarUsuarios() {
+            try {
+                const response = await fetch('http://localhost:3000/usuarios');
+                const data = await response.json();
+
+                if (data.success) {
+                    tabelaUsuarios.innerHTML = ''; // Limpa a tabela antes de preencher
+                    data.usuarios.forEach(usuario => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${usuario.id_usuario}</td>
+                            <td>${usuario.nome}</td>
+                            <td>${usuario.email}</td>
+                            <td>${usuario.status_conta === 1 ? 'Ativa' : 'Desativada'}</td>
+                            <td>
+                                <button
+                                    class="${usuario.status_conta === 1 ? 'btn-desativar' : 'btn-ativar'}"
+                                    onclick="alterarStatus(${usuario.id_usuario}, ${usuario.status_conta === 1 ? 0 : 1})">
+                                    ${usuario.status_conta === 1 ? 'Desativar' : 'Ativar'}
+                                </button>
+                            </td>
+                        `;
+                        tabelaUsuarios.appendChild(row);
+                    });
+                } else {
+                    console.error('Erro ao listar usuários:', data.message);
+                }
+            } catch (error) {
+                console.error('Erro ao conectar com a API:', error);
+            }
+        }
+
+        // Função para alterar o status do usuário
+        async function alterarStatus(id, novoStatus) {
+            try {
+                const response = await fetch(`http://localhost:3000/usuarios/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status_conta: novoStatus })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Status atualizado com sucesso!');
+                    listarUsuarios(); // Recarrega a tabela para mostrar o status atualizado
+                } else {
+                    alert('Erro ao atualizar o status: ' + data.message);
+                }
+            } catch (error) {
+                alert('Erro na requisição.');
+                console.error('Erro na requisição PUT:', error);
+            }
+        }
+
+        // Carrega os usuários quando a página é carregada
+        document.addEventListener('DOMContentLoaded', listarUsuarios);
+    </script>
+</body>
+</html>

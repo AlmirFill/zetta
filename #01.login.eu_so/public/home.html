@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Dashboard de Fazendas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        #fazendas-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .fazenda-item {
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fazenda-info {
+            flex-grow: 1;
+        }
+
+        .fazenda-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .fazenda-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Meu Dashboard</h1>
+        <p>Suas fazendas cadastradas</p>
+    </div>
+
+    <div class="container">
+        <div id="loading-message" class="message">Carregando suas fazendas...</div>
+        <div id="no-fazendas" class="message success" style="display:none;">Você ainda não tem fazendas cadastradas.</div>
+        <div id="error-message" class="message error" style="display:none;">Ocorreu um erro ao carregar as fazendas.</div>
+        
+        <ul id="fazendas-list">
+            </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fazendasList = document.getElementById('fazendas-list');
+            const loadingMessage = document.getElementById('loading-message');
+            const noFazendasMessage = document.getElementById('no-fazendas');
+            const errorMessage = document.getElementById('error-message');
+
+            // Função para ler um cookie (a mesma do exemplo anterior)
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+            async function fetchFazendas() {
+                const usuario_id = getCookie('id_usuario'); // ⚠️ Altere 'usuario_id' se o nome do seu cookie for diferente
+                
+                if (!usuario_id) {
+                    loadingMessage.style.display = 'none';
+                    errorMessage.textContent = 'Usuário não autenticado. Faça login para ver suas fazendas.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:3000/fazendas/${usuario_id}`);
+                    const result = await response.json();
+
+                    loadingMessage.style.display = 'none';
+
+                    if (response.ok && result.success) {
+                        if (result.fazendas.length > 0) {
+                            result.fazendas.forEach(fazenda => {
+                                const listItem = document.createElement('li');
+                                listItem.classList.add('fazenda-item');
+                                listItem.innerHTML = `
+                                    <div class="fazenda-info">
+                                        <h3>${fazenda.nome_fazenda}</h3>
+                                        <p>${fazenda.localizacao || 'Localização não informada'}</p>
+                                    </div>
+                                `;
+                                fazendasList.appendChild(listItem);
+                            });
+                        } else {
+                            noFazendasMessage.style.display = 'block';
+                        }
+                    } else {
+                        errorMessage.textContent = result.message || 'Ocorreu um erro ao carregar as fazendas.';
+                        errorMessage.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Erro na requisição:', error);
+                    loadingMessage.style.display = 'none';
+                    errorMessage.textContent = 'Erro ao conectar com o servidor.';
+                    errorMessage.style.display = 'block';
+                }
+            }
+
+            fetchFazendas();
+        });
+    </script>
+</body>
+</html>
