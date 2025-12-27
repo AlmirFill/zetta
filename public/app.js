@@ -1,3 +1,6 @@
+// Define API_BASE_URL globalmente (funciona em localhost, Render, ou qualquer domínio)
+window.API_BASE_URL = window.location.origin;
+
 // PWA App Manager
 class ZettaApp {
     constructor() {
