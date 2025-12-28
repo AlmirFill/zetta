@@ -68,7 +68,7 @@ app.post('/login', async (req, res) => {
     try {
         const [rows] = await pool.execute(
             'SELECT * FROM usuarios WHERE nome = ? AND senha = ?',
-            [, senha]
+            [nome, senha]
         );
 
         if (rows.length > 0) {
@@ -117,7 +117,7 @@ app.post('/cadastrar-bovino', async (req, res) => {
 
     try {
         const [existing] = await pool.execute(
-            'SELECT id_bovino FROM bovinos WHERE numero_brinco = ? AND id_fazenda = ?',
+            'SELECT id_bovino FROM bovinos WHERE numero_boi = ? AND id_fazenda = ?',
             [numero_brinco, id_fazenda]
         );
 
@@ -126,7 +126,7 @@ app.post('/cadastrar-bovino', async (req, res) => {
         }
 
         await pool.execute(
-            'INSERT INTO bovinos (id_fazenda, numero_brinco, peso, data_nascimento, raca) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO bovinos (id_fazenda, numero_boi, peso, data_nascimento, raca) VALUES (?, ?, ?, ?, ?)',
             [id_fazenda, numero_brinco, peso, data_nascimento, raca || null]
         );
 
