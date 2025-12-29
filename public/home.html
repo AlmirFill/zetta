@@ -2,241 +2,1280 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#007bff">
-    <meta name="description" content="Dashboard de gestão de fazendas e rebanho bovino">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Zetta Bovino">
-    <title>Meu Dashboard de Fazendas</title>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23007bff' width='192' height='192'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial'>🐄</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23007bff' width='180' height='180'/><text x='50%' y='50%' font-size='75' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial'>🐄</text></svg>">
-    <script>
-        // Define API_BASE_URL imediatamente (antes de qualquer outro script)
-        window.API_BASE_URL = window.location.origin;
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fazenda App - Gestão de Rebanho</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .header {
-            background-color: #007bff;
-            color: #fff;
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
             padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            margin-bottom: 20px;
         }
 
         .container {
-            max-width: 900px;
-            margin: auto;
-            background-color: #fff;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
             padding: 20px;
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .farm-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .farm-address {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c5530;
+        }
+
+        /* Herd Value */
+        .herd-value {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(192, 57, 43, 0.3);
+        }
+
+        .herd-value-label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .herd-value-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: black;
+            background: yellow;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        h1 {
-            margin: 0;
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25);
         }
 
-        #fazendas-list {
-            list-style: none;
-            padding: 0;
+        .tab.active {
+            color: black;
+            background: yellow;
+            font-weight: 800;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-title {
+            font-size: 1.8rem;
+            color: #2c5530;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+
+        .search-section h3 {
+            margin-bottom: 15px;
+            color: #2c5530;
+            text-align: center;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4a7c59;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(74, 124, 89, 0.4);
+        }
+
+        /* Evolution Tab */
+        .evolution-content {
+            text-align: center;
+        }
+
+        .search-evolution-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+
+        .weights-list {
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .weight-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .weight-item:hover {
+            background-color: #f0f8ff;
+        }
+
+        .weight-item:last-child {
+            border-bottom: none;
+        }
+
+        .weight-item.selected {
+            background-color: #e8f4e8;
+            border-left: 4px solid #4a7c59;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            height: 400px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            border: 2px dashed #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: #666;
+        }
+
+        .chart-placeholder p {
+            margin: 10px 0;
+        }
+
+        /* Gráfico de Pizza */
+        .pie-chart-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+        }
+
+        .pie-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(
+                #4a7c59 0%,
+                #4a7c59 0%,
+                #e74c3c 0%,
+                #e74c3c 0%
+            );
+        }
+
+        .pie-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .pie-center-text {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c5530;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
             margin-top: 20px;
         }
 
-        .fazenda-item {
-            background-color: #e9ecef;
-            border: 1px solid #dee2e6;
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-color.green {
+            background: #4a7c59;
+        }
+
+        .legend-color.red {
+            background: #e74c3c;
+        }
+
+        /* Campo de meta */
+        .goal-section {
+            margin: 20px 0;
             padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .goal-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .goal-input-group input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 120px;
+        }
+
+        .goal-input-group button {
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .goal-input-group button:hover {
+            transform: translateY(-2px);
+        }
+
+        .goal-display {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #e74c3c;
+        }
+
+        /* Detalhes do gráfico */
+        .chart-details {
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .detail-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            margin: 8px 0;
+            font-size: 0.95rem;
         }
 
-        .fazenda-info {
-            flex-grow: 1;
-        }
-
-        .fazenda-info h3 {
-            margin: 0 0 5px 0;
+        .detail-label {
+            font-weight: 600;
             color: #333;
         }
 
-        .fazenda-info p {
-            margin: 0;
-            color: #666;
-            font-size: 0.9em;
+        .detail-value {
+            color: #2c5530;
+            font-weight: 700;
         }
 
-        .message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        #install-btn {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            z-index: 1000;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        #install-btn:hover {
-            background-color: #218838;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .farm-name {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-group {
+                flex-direction: column;
+            }
+            
+            .pie-chart-container {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .pie-center {
+                width: 80px;
+                height: 80px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="farm-name">Fazenda Boi Feliz</h1>
+            <p class="farm-address">Rodovia BR-153, Km 320 - Cidade Verde, GO</p>
+        </header>
 
-    <div class="header">
-        <h1>Meu Dashboard</h1>
-        <p>Suas fazendas cadastradas</p>
-    </div>
+        <!-- Stats including Last Weighing in the same style -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">BOVINOS</div>
+                <div class="stat-value" id="total-animals">143</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">BAIXAS</div>
+                <div class="stat-value" id="total-discharges">8</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">PESO DO REBANHO</div>
+                <div class="stat-value" id="herd-weight">85.340</div>
+                <div style="font-size: 0.8rem; margin-top: 5px;">kg</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">DATA DA ÚLTIMA PESAGEM</div>
+                <div class="stat-value" id="last-weighing-date">30/03/2025</div>
+            </div>
+        </div>
 
-    <div class="container" style="margin-bottom:20px;">
-        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
-            <div style="flex:1;min-width:220px;padding:12px;border-radius:8px;background:#e9f5ff;">
-                <h3>Passo 1</h3>
-                <p>Cadastrar uma fazenda</p>
-                <a href="/cadastro-fazenda.html" style="display:inline-block;margin-top:8px;padding:8px 12px;background:#007bff;color:#fff;border-radius:6px;text-decoration:none;">Cadastrar Fazenda</a>
+        <!-- Herd Value -->
+        <div class="herd-value">
+            <div class="herd-value-label">VALOR DO REBANHO</div>
+            <div class="herd-value-amount" id="herd-value">R$ 426.700,00</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="register">Cadastrar Bovino</button>
+            <button class="tab" data-tab="discharge">Baixa</button>
+            <button class="tab" data-tab="evolution">Evolução</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content active" id="register-tab">
+            <h2 class="tab-title">Cadastro de Bovino</h2>
+            
+            <!-- Search Section -->
+            <div class="search-section">
+                <h3>Buscar Cadastro Individual</h3>
+                <div class="search-group">
+                    <input type="text" id="search-animal-number-register" placeholder="Digite o número do animal...">
+                    <button class="search-btn" id="search-btn-register">Buscar</button>
+                </div>
             </div>
-            <div style="flex:1;min-width:220px;padding:12px;border-radius:8px;background:#e9f5ff;">
-                <h3>Passo 2</h3>
-                <p>Cadastrar bovinos na fazenda</p>
-                <a href="/web.bovino-2.html" style="display:inline-block;margin-top:8px;padding:8px 12px;background:#28a745;color:#fff;border-radius:6px;text-decoration:none;">Cadastrar Bovino</a>
+
+            <!-- Registration Form -->
+            <form id="register-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="animal-number">Número do Animal *</label>
+                        <input type="text" id="animal-number" placeholder="Ex: 001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="birth-date">Data de Nascimento *</label>
+                        <input type="date" id="birth-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="arrival-date">Data de Chegada *</label>
+                        <input type="date" id="arrival-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="current-weight">Peso Atual (kg) *</label>
+                        <input type="number" id="current-weight" placeholder="Ex: 600" min="1" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last-weighing-date">Data da Última Pesagem *</label>
+                        <input type="date" id="last-weighing-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="color">Cor *</label>
+                        <select id="color" required>
+                            <option value="">Selecione...</option>
+                            <option value="preto">Preto</option>
+                            <option value="branco">Branco</option>
+                            <option value="marrom">Marrom</option>
+                            <option value="vermelho">Vermelho</option>
+                            <option value="cinza">Cinza</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="breed">Raça *</label>
+                        <select id="breed" required>
+                            <option value="">Selecione...</option>
+                            <option value="nelore">Nelore</option>
+                            <option value="angus">Angus</option>
+                            <option value="brangus">Brangus</option>
+                            <option value="hereford">Hereford</option>
+                            <option value="charoles">Charolês</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vaccination">Vacina *</label>
+                        <input type="text" id="vaccination" placeholder="Ex: Aftosa, Brucelose">
+                    </div>
+                    <div class="form-group">
+                        <label for="initial-weight">Peso Inicial (kg) *</label>
+                        <input type="number" id="initial-weight" placeholder="Ex: 200" min="1" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch">Lote *</label>
+                        <input type="text" id="batch" placeholder="Ex: Lote A">
+                    </div>
+                    <div class="form-group">
+                        <label for="separation-weight">Peso de Apartação (kg)</label>
+                        <input type="number" id="separation-weight" placeholder="Ex: 450" min="1" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="pasture">Qual Pasto *</label>
+                        <select id="pasture" required>
+                            <option value="">Selecione...</option>
+                            <option value="pasto-1">Pasto 1</option>
+                            <option value="pasto-2">Pasto 2</option>
+                            <option value="pasto-3">Pasto 3</option>
+                            <option value="pasto-4">Pasto 4</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Sexo *</label>
+                        <select id="gender" required>
+                            <option value="">Selecione...</option>
+                            <option value="macho">Macho</option>
+                            <option value="femea">Fêmea</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Cadastrar Bovino</button>
+            </form>
+        </div>
+
+        <div class="tab-content" id="discharge-tab">
+            <h2 class="tab-title">Registro de Baixa</h2>
+            
+            <!-- Search Section for Discharge -->
+            <div class="search-section">
+                <h3>Buscar Cadastro Individual</h3>
+                <div class="search-group">
+                    <input type="text" id="search-animal-number-discharge" placeholder="Digite o número do animal...">
+                    <button class="search-btn" id="search-btn-discharge">Buscar</button>
+                </div>
             </div>
-            <div style="flex:1;min-width:220px;padding:12px;border-radius:8px;background:#e9f5ff;">
-                <h3>Passo 3</h3>
-                <p>Ver bovinos cadastrados</p>
-                <a href="/bovinos.html" style="display:inline-block;margin-top:8px;padding:8px 12px;background:#6c757d;color:#fff;border-radius:6px;text-decoration:none;">Listar Bovinos</a>
+
+            <!-- Discharge Form with all animal info -->
+            <form id="discharge-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="discharge-animal-number">Número do Animal *</label>
+                        <input type="text" id="discharge-animal-number" placeholder="Ex: 001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-birth-date">Data de Nascimento</label>
+                        <input type="date" id="discharge-birth-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-arrival-date">Data de Chegada</label>
+                        <input type="date" id="discharge-arrival-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-current-weight">Peso Atual (kg)</label>
+                        <input type="number" id="discharge-current-weight" placeholder="Ex: 600" min="1" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-last-weighing-date">Data da Última Pesagem</label>
+                        <input type="date" id="discharge-last-weighing-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-color">Cor</label>
+                        <select id="discharge-color">
+                            <option value="">Selecione...</option>
+                            <option value="preto">Preto</option>
+                            <option value="branco">Branco</option>
+                            <option value="marrom">Marrom</option>
+                            <option value="vermelho">Vermelho</option>
+                            <option value="cinza">Cinza</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-breed">Raça</label>
+                        <select id="discharge-breed">
+                            <option value="">Selecione...</option>
+                            <option value="nelore">Nelore</option>
+                            <option value="angus">Angus</option>
+                            <option value="brangus">Brangus</option>
+                            <option value="hereford">Hereford</option>
+                            <option value="charoles">Charolês</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-vaccination">Vacina</label>
+                        <input type="text" id="discharge-vaccination" placeholder="Ex: Aftosa, Brucelose">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-initial-weight">Peso Inicial (kg)</label>
+                        <input type="number" id="discharge-initial-weight" placeholder="Ex: 200" min="1" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-batch">Lote</label>
+                        <input type="text" id="discharge-batch" placeholder="Ex: Lote A">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-separation-weight">Peso de Apartação (kg)</label>
+                        <input type="number" id="discharge-separation-weight" placeholder="Ex: 450" min="1" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-pasture">Qual Pasto</label>
+                        <select id="discharge-pasture">
+                            <option value="">Selecione...</option>
+                            <option value="pasto-1">Pasto 1</option>
+                            <option value="pasto-2">Pasto 2</option>
+                            <option value="pasto-3">Pasto 3</option>
+                            <option value="pasto-4">Pasto 4</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-gender">Sexo</label>
+                        <select id="discharge-gender">
+                            <option value="">Selecione...</option>
+                            <option value="macho">Macho</option>
+                            <option value="femea">Fêmea</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-reason">Motivo da Baixa *</label>
+                        <select id="discharge-reason" required>
+                            <option value="">Selecione...</option>
+                            <option value="venda">Venda</option>
+                            <option value="morte">Morte</option>
+                            <option value="transferencia">Transferência</option>
+                            <option value="abate">Abate</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="discharge-date">Data *</label>
+                        <input type="date" id="discharge-date" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="discharge-observation">Observação</label>
+                    <textarea id="discharge-observation" placeholder="Digite observações sobre a baixa..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Registrar Baixa</button>
+            </form>
+        </div>
+
+        <div class="tab-content" id="evolution-tab">
+            <h2 class="tab-title">Evolução do Bovino</h2>
+            
+            <!-- Search Section for Evolution -->
+            <div class="search-section">
+                <h3>Buscar Cadastro Individual</h3>
+                <div class="search-group">
+                    <input type="text" id="search-animal-number-evolution" placeholder="Digite o número do animal...">
+                    <button class="search-btn" id="search-btn-evolution">Buscar</button>
+                </div>
+            </div>
+
+            <!-- Campo de Meta -->
+            <div class="goal-section">
+                <h3>Definir Meta de Peso</h3>
+                <div class="goal-input-group">
+                    <input type="number" id="goal-weight" placeholder="Ex: 650" min="1" step="0.1">
+                    <button id="set-goal-btn">Definir Meta</button>
+                </div>
+                <div class="goal-display" id="goal-display">Meta: Nenhuma definida</div>
+            </div>
+
+            <!-- Evolution Content -->
+            <div class="evolution-content">
+                <div class="weights-list" id="weights-list">
+                    <div class="weight-item">Selecione um animal para visualizar o histórico de pesagens</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-placeholder" id="chart-placeholder">
+                        <p>📊 Selecione um animal para visualizar o gráfico de evolução</p>
+                        <p>O gráfico de pizza mostra o progresso em relação à meta</p>
+                    </div>
+                    <div class="pie-chart-section" id="pie-chart-section" style="display: none;">
+                        <div class="pie-chart-container">
+                            <div class="pie-chart" id="pie-chart"></div>
+                            <div class="pie-center">
+                                <div class="pie-center-text" id="pie-center-text">0%</div>
+                            </div>
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color green"></div>
+                                <span>Progresso</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color red"></div>
+                                <span>Restante</span>
+                            </div>
+                        </div>
+                        <div class="chart-details" id="chart-details">
+                            <!-- Detalhes serão preenchidos dinamicamente -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="container">
-        <div id="loading-message" class="message">Carregando suas fazendas...</div>
-        <div id="no-fazendas" class="message success" style="display:none;">Você ainda não tem fazendas cadastradas.</div>
-        <div id="error-message" class="message error" style="display:none;">Ocorreu um erro ao carregar as fazendas.</div>
-        
-        <ul id="fazendas-list">
-            </ul>
-    </div>
-
-    <button id="install-btn">📥 Instalar App</button>
-
     <script>
-        // Registra o Service Worker para funcionalidade offline
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker registrado com sucesso:', registration);
-                })
-                .catch(error => {
-                    console.log('Erro ao registrar Service Worker:', error);
-                });
+        // Data atual para inicialização
+        const today = new Date();
+        const formattedToday = today.toLocaleDateString('pt-BR');
+
+        // Dados iniciais
+        let herdData = {
+            animals: 143,
+            discharges: 8,
+            weight: 85340, // kg (incluindo o boi 123 com 640kg)
+            arrobaPrice: 300, // R$ por arroba (15kg)
+            lastWeighingDate: '30/03/2025' // Data inicial da última pesagem
+        };
+
+        // Armazenamento de animais (simulado) com histórico de pesagens
+        let animals = [
+            { 
+                number: '001', 
+                birthDate: '2023-05-15',
+                arrivalDate: '2023-06-01',
+                currentWeight: 600,
+                lastWeighingDate: '2025-12-28',
+                color: 'preto',
+                breed: 'nelore',
+                vaccination: 'Aftosa, Brucelose',
+                initialWeight: 200,
+                batch: 'Lote A',
+                separationWeight: 450,
+                pasture: 'pasto-1',
+                gender: 'macho',
+                weightHistory: [
+                    { date: '2023-06-01', weight: 200 },
+                    { date: '2023-09-15', weight: 320 },
+                    { date: '2023-12-20', weight: 410 },
+                    { date: '2024-03-10', weight: 480 },
+                    { date: '2024-06-25', weight: 520 },
+                    { date: '2024-09-30', weight: 560 },
+                    { date: '2024-12-15', weight: 580 },
+                    { date: '2025-03-20', weight: 590 },
+                    { date: '2025-06-10', weight: 595 },
+                    { date: '2025-09-05', weight: 598 },
+                    { date: '2025-12-28', weight: 600 }
+                ]
+            },
+            { 
+                number: '002', 
+                birthDate: '2023-06-20',
+                arrivalDate: '2023-07-10',
+                currentWeight: 550,
+                lastWeighingDate: '2025-12-28',
+                color: 'branco',
+                breed: 'angus',
+                vaccination: 'Aftosa',
+                initialWeight: 180,
+                batch: 'Lote B',
+                separationWeight: 420,
+                pasture: 'pasto-2',
+                gender: 'femea',
+                weightHistory: [
+                    { date: '2023-07-10', weight: 180 },
+                    { date: '2023-10-20', weight: 280 },
+                    { date: '2024-01-15', weight: 350 },
+                    { date: '2024-04-30', weight: 420 },
+                    { date: '2024-08-10', weight: 470 },
+                    { date: '2024-11-25', weight: 500 },
+                    { date: '2025-02-28', weight: 520 },
+                    { date: '2025-05-15', weight: 535 },
+                    { date: '2025-08-20', weight: 545 },
+                    { date: '2025-11-10', weight: 548 },
+                    { date: '2025-12-28', weight: 550 }
+                ]
+            },
+            { 
+                number: '003', 
+                birthDate: '2023-04-10',
+                arrivalDate: '2023-05-05',
+                currentWeight: 620,
+                lastWeighingDate: '2025-12-28',
+                color: 'marrom',
+                breed: 'brangus',
+                vaccination: 'Aftosa, Brucelose, Raiva',
+                initialWeight: 220,
+                batch: 'Lote A',
+                separationWeight: 480,
+                pasture: 'pasto-3',
+                gender: 'macho',
+                weightHistory: [
+                    { date: '2023-05-05', weight: 220 },
+                    { date: '2023-08-12', weight: 340 },
+                    { date: '2023-11-18', weight: 430 },
+                    { date: '2024-02-25', weight: 500 },
+                    { date: '2024-05-30', weight: 550 },
+                    { date: '2024-09-10', weight: 580 },
+                    { date: '2024-12-05', weight: 600 },
+                    { date: '2025-03-15', weight: 610 },
+                    { date: '2025-06-20', weight: 615 },
+                    { date: '2025-09-25', weight: 618 },
+                    { date: '2025-12-28', weight: 620 }
+                ]
+            },
+            // Exemplo do boi 123 com pesagens em janeiro e março
+            { 
+                number: '123', 
+                birthDate: '2022-08-15',
+                arrivalDate: '2023-01-10',
+                currentWeight: 640,
+                lastWeighingDate: '2025-03-30',
+                color: 'preto',
+                breed: 'nelore',
+                vaccination: 'Aftosa, Brucelose, Raiva, Carbúnculo',
+                initialWeight: 180,
+                batch: 'Lote C',
+                separationWeight: 480,
+                pasture: 'pasto-2',
+                gender: 'macho',
+                weightHistory: [
+                    { date: '2023-01-10', weight: 180 },
+                    { date: '2023-06-20', weight: 320 },
+                    { date: '2023-12-15', weight: 450 },
+                    { date: '2024-05-10', weight: 520 },
+                    { date: '2024-11-25', weight: 580 },
+                    { date: '2025-01-30', weight: 500 },
+                    { date: '2025-03-30', weight: 640 }
+                ]
+            }
+        ];
+
+        // Array para armazenar animal selecionado para evolução
+        let selectedAnimal = null;
+        let goalWeight = null;
+
+        // Função para atualizar os dados exibidos
+        function updateDisplay() {
+            document.getElementById('total-animals').textContent = herdData.animals;
+            document.getElementById('total-discharges').textContent = herdData.discharges;
+            document.getElementById('herd-weight').textContent = herdData.weight.toLocaleString('pt-BR');
+            
+            // Cálculo do valor do rebanho: (peso em kg / 15) * preço da arroba
+            const herdValue = (herdData.weight / 15) * herdData.arrobaPrice;
+            document.getElementById('herd-value').textContent = herdValue.toLocaleString('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL' 
+            });
+            
+            // Atualiza a data da última pesagem
+            document.getElementById('last-weighing-date').textContent = herdData.lastWeighingDate;
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            const fazendasList = document.getElementById('fazendas-list');
-            const loadingMessage = document.getElementById('loading-message');
-            const noFazendasMessage = document.getElementById('no-fazendas');
-            const errorMessage = document.getElementById('error-message');
 
-            // Função para ler um cookie (a mesma do exemplo anterior)
-            function getCookie(name) {
-                const nameEQ = name + "=";
-                const ca = document.cookie.split(';');
-                for(let i = 0; i < ca.length; i++) {
-                    let c = ca[i];
-                    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-                }
-                return null;
-            }
+        // Atualiza a exibição inicial
+        updateDisplay();
 
-            async function fetchFazendas() {
-                const usuario_id = getCookie('id_usuario'); // ⚠️ Altere 'usuario_id' se o nome do seu cookie for diferente
+        // Manipulação das abas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove classe active de todas as abas
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 
-                if (!usuario_id) {
-                    loadingMessage.style.display = 'none';
-                    errorMessage.textContent = 'Usuário não autenticado. Faça login para ver suas fazendas.';
-                    errorMessage.style.display = 'block';
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`${API_BASE_URL}/fazendas/${usuario_id}`);
-                    const result = await response.json();
-
-                    loadingMessage.style.display = 'none';
-
-                    if (response.ok && result.success) {
-                        if (result.fazendas.length > 0) {
-                            result.fazendas.forEach(fazenda => {
-                                const listItem = document.createElement('li');
-                                listItem.classList.add('fazenda-item');
-                                listItem.innerHTML = `
-                                    <div class="fazenda-info">
-                                        <h3>${fazenda.nome_fazenda}</h3>
-                                        <p>${fazenda.localizacao || 'Localização não informada'}</p>
-                                    </div>
-                                    <div style="margin-left:12px;display:flex;gap:8px;align-items:center;">
-                                        <button onclick="window.location.href='/bovinos.html?id_fazenda=${fazenda.id_fazenda}'" style="padding:8px 10px;border-radius:6px;background:#007bff;color:#fff;border:none;">Ver Bovinos</button>
-                                        <a href="/web.bovino-2.html?id_fazenda=${fazenda.id_fazenda}" style="padding:8px 10px;border-radius:6px;background:#28a745;color:#fff;text-decoration:none;">Cadastrar Bovino</a>
-                                    </div>
-                                `;
-                                fazendasList.appendChild(listItem);
-                            });
-                        } else {
-                            noFazendasMessage.style.display = 'block';
-                        }
-                    } else {
-                        errorMessage.textContent = result.message || 'Ocorreu um erro ao carregar as fazendas.';
-                        errorMessage.style.display = 'block';
-                    }
-
-                } catch (error) {
-                    console.error('Erro na requisição:', error);
-                    loadingMessage.style.display = 'none';
-                    errorMessage.textContent = 'Erro ao conectar com o servidor.';
-                    errorMessage.style.display = 'block';
-                }
-            }
-
-            fetchFazendas();
+                // Adiciona classe active à aba clicada
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
         });
+
+        // Função para preencher formulário com dados do animal
+        function fillAnimalForm(animal, formPrefix = '') {
+            const prefix = formPrefix ? formPrefix + '-' : '';
+            document.getElementById(`${prefix}animal-number`).value = animal.number || '';
+            document.getElementById(`${prefix}birth-date`).value = animal.birthDate || '';
+            document.getElementById(`${prefix}arrival-date`).value = animal.arrivalDate || '';
+            document.getElementById(`${prefix}current-weight`).value = animal.currentWeight || '';
+            document.getElementById(`${prefix}last-weighing-date`).value = animal.lastWeighingDate || '';
+            document.getElementById(`${prefix}color`).value = animal.color || '';
+            document.getElementById(`${prefix}breed`).value = animal.breed || '';
+            document.getElementById(`${prefix}vaccination`).value = animal.vaccination || '';
+            document.getElementById(`${prefix}initial-weight`).value = animal.initialWeight || '';
+            document.getElementById(`${prefix}batch`).value = animal.batch || '';
+            document.getElementById(`${prefix}separation-weight`).value = animal.separationWeight || '';
+            document.getElementById(`${prefix}pasture`).value = animal.pasture || '';
+            document.getElementById(`${prefix}gender`).value = animal.gender || '';
+        }
+
+        // Função para exibir histórico de pesagens e selecionar animal
+        function displayWeightHistory(animal) {
+            const weightsList = document.getElementById('weights-list');
+            weightsList.innerHTML = '';
+            
+            if (!animal || !animal.weightHistory) {
+                weightsList.innerHTML = '<div class="weight-item">Nenhum histórico de pesagem encontrado</div>';
+                return;
+            }
+            
+            // Armazena o animal selecionado
+            selectedAnimal = animal;
+            
+            animal.weightHistory.forEach((weightEntry, index) => {
+                const weightItem = document.createElement('div');
+                weightItem.className = 'weight-item';
+                weightItem.innerHTML = `
+                    <strong>${formatDate(weightEntry.date)}</strong> - ${weightEntry.weight} kg
+                `;
+                weightItem.addEventListener('click', () => {
+                    // Marca como selecionado visualmente
+                    document.querySelectorAll('.weight-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    weightItem.classList.add('selected');
+                    
+                    // Atualiza o gráfico com a meta e o peso atual
+                    updatePieChart(weightEntry.weight);
+                });
+                weightsList.appendChild(weightItem);
+            });
+            
+            // Seleciona automaticamente a última pesagem
+            if (animal.weightHistory.length > 0) {
+                const lastIndex = animal.weightHistory.length - 1;
+                weightsList.children[lastIndex].classList.add('selected');
+                updatePieChart(animal.weightHistory[lastIndex].weight);
+            }
+        }
+
+        // Função para atualizar o gráfico de pizza
+        function updatePieChart(currentWeight) {
+            const chartPlaceholder = document.getElementById('chart-placeholder');
+            const pieChartSection = document.getElementById('pie-chart-section');
+            
+            if (!selectedAnimal || !goalWeight) {
+                chartPlaceholder.style.display = 'block';
+                pieChartSection.style.display = 'none';
+                return;
+            }
+            
+            chartPlaceholder.style.display = 'none';
+            pieChartSection.style.display = 'block';
+            
+            // Calcula o progresso
+            const progress = Math.min(100, (currentWeight / goalWeight) * 100);
+            const progressAngle = progress * 3.6; // 360 graus para 100%
+            
+            // Atualiza o gráfico de pizza
+            const pieChart = document.getElementById('pie-chart');
+            pieChart.style.background = `conic-gradient(
+                #4a7c59 0deg ${progressAngle}deg,
+                #e74c3c ${progressAngle}deg 360deg
+            )`;
+            
+            // Atualiza o texto central
+            document.getElementById('pie-center-text').textContent = `${Math.round(progress)}%`;
+            
+            // Atualiza os detalhes
+            const chartDetails = document.getElementById('chart-details');
+            chartDetails.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Peso Atual:</span>
+                    <span class="detail-value">${currentWeight} kg</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Meta:</span>
+                    <span class="detail-value">${goalWeight} kg</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Faltam:</span>
+                    <span class="detail-value">${Math.max(0, goalWeight - currentWeight)} kg</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Progresso:</span>
+                    <span class="detail-value">${Math.round(progress)}%</span>
+                </div>
+            `;
+        }
+
+        // Função auxiliar para formatar data
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        // Atualiza a data da última pesagem quando um novo bovino é cadastrado
+        function updateLastWeighingDate(newDate) {
+            const newDateObj = new Date(newDate);
+            const currentLastDate = new Date(herdData.lastWeighingDate.split('/').reverse().join('-'));
+            
+            if (newDateObj > currentLastDate) {
+                herdData.lastWeighingDate = newDateObj.toLocaleDateString('pt-BR');
+                document.getElementById('last-weighing-date').textContent = herdData.lastWeighingDate;
+            }
+        }
+
+        // Função para definir meta
+        document.getElementById('set-goal-btn').addEventListener('click', function() {
+            const goalInput = document.getElementById('goal-weight').value;
+            if (goalInput && !isNaN(goalInput)) {
+                goalWeight = parseFloat(goalInput);
+                document.getElementById('goal-display').textContent = `Meta: ${goalWeight} kg`;
+                
+                // Se já houver um animal selecionado, atualiza o gráfico
+                if (selectedAnimal && selectedAnimal.weightHistory.length > 0) {
+                    const currentWeight = selectedAnimal.weightHistory[selectedAnimal.weightHistory.length - 1].weight;
+                    updatePieChart(currentWeight);
+                }
+            } else {
+                alert('Por favor, digite um valor válido para a meta.');
+            }
+        });
+
+        // Função de busca de animal para cadastro
+        document.getElementById('search-btn-register').addEventListener('click', function() {
+            const searchNumber = document.getElementById('search-animal-number-register').value.trim();
+            if (searchNumber) {
+                const foundAnimal = animals.find(animal => animal.number === searchNumber);
+                if (foundAnimal) {
+                    fillAnimalForm(foundAnimal);
+                    alert(`Animal encontrado e dados preenchidos!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
+                } else {
+                    alert('Animal não encontrado no cadastro.');
+                }
+            } else {
+                alert('Por favor, digite o número do animal para buscar.');
+            }
+        });
+
+        // Função de busca de animal para baixa
+        document.getElementById('search-btn-discharge').addEventListener('click', function() {
+            const searchNumber = document.getElementById('search-animal-number-discharge').value.trim();
+            if (searchNumber) {
+                const foundAnimal = animals.find(animal => animal.number === searchNumber);
+                if (foundAnimal) {
+                    fillAnimalForm(foundAnimal, 'discharge');
+                    alert(`Animal encontrado e dados preenchidos!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
+                } else {
+                    alert('Animal não encontrado no cadastro.');
+                }
+            } else {
+                alert('Por favor, digite o número do animal para buscar.');
+            }
+        });
+
+        // Função de busca de animal para evolução
+        document.getElementById('search-btn-evolution').addEventListener('click', function() {
+            const searchNumber = document.getElementById('search-animal-number-evolution').value.trim();
+            if (searchNumber) {
+                const foundAnimal = animals.find(animal => animal.number === searchNumber);
+                if (foundAnimal) {
+                    displayWeightHistory(foundAnimal);
+                } else {
+                    document.getElementById('weights-list').innerHTML = '<div class="weight-item">Animal não encontrado no cadastro.</div>';
+                    selectedAnimal = null;
+                    document.getElementById('chart-placeholder').style.display = 'block';
+                    document.getElementById('pie-chart-section').style.display = 'none';
+                    alert('Animal não encontrado no cadastro.');
+                }
+            } else {
+                document.getElementById('weights-list').innerHTML = '<div class="weight-item">Selecione um animal para visualizar o histórico de pesagens</div>';
+                selectedAnimal = null;
+                document.getElementById('chart-placeholder').style.display = 'block';
+                document.getElementById('pie-chart-section').style.display = 'none';
+                alert('Por favor, digite o número do animal para buscar.');
+            }
+        });
+
+        // Formulário de cadastro de bovino
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const animalNumber = document.getElementById('animal-number').value;
+            const currentWeight = parseFloat(document.getElementById('current-weight').value);
+            const lastWeighingDate = document.getElementById('last-weighing-date').value;
+            
+            // Cria novo animal
+            const newAnimal = {
+                number: animalNumber,
+                birthDate: document.getElementById('birth-date').value,
+                arrivalDate: document.getElementById('arrival-date').value,
+                currentWeight: currentWeight,
+                lastWeighingDate: lastWeighingDate,
+                color: document.getElementById('color').value,
+                breed: document.getElementById('breed').value,
+                vaccination: document.getElementById('vaccination').value,
+                initialWeight: parseFloat(document.getElementById('initial-weight').value),
+                batch: document.getElementById('batch').value,
+                separationWeight: parseFloat(document.getElementById('separation-weight').value) || null,
+                pasture: document.getElementById('pasture').value,
+                gender: document.getElementById('gender').value,
+                weightHistory: [
+                    { date: document.getElementById('arrival-date').value, weight: parseFloat(document.getElementById('initial-weight').value) },
+                    { date: lastWeighingDate, weight: currentWeight }
+                ]
+            };
+            
+            // Adiciona animal ao array
+            animals.push(newAnimal);
+            
+            // Atualiza os dados do rebanho
+            herdData.animals += 1;
+            herdData.weight += currentWeight;
+            
+            // Atualiza a data da última pesagem se necessário
+            updateLastWeighingDate(lastWeighingDate);
+            
+            updateDisplay();
+            this.reset();
+            
+            // Reseta as datas para o valor atual
+            const todayISO = new Date().toISOString().split('T')[0];
+            document.getElementById('arrival-date').value = todayISO;
+            document.getElementById('last-weighing-date').value = todayISO;
+            
+            alert('Bovino cadastrado com sucesso!');
+        });
+
+        // Formulário de baixa
+        document.getElementById('discharge-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const animalNumber = document.getElementById('discharge-animal-number').value;
+            const currentWeight = parseFloat(document.getElementById('discharge-current-weight').value) || 0;
+            const observation = document.getElementById('discharge-observation').value;
+            
+            if (herdData.animals > 0) {
+                // Remove o animal do array
+                const animalIndex = animals.findIndex(animal => animal.number === animalNumber);
+                if (animalIndex !== -1) {
+                    animals.splice(animalIndex, 1);
+                }
+                
+                herdData.discharges += 1;
+                herdData.weight = Math.max(0, herdData.weight - currentWeight);
+                herdData.animals = Math.max(0, herdData.animals - 1);
+                
+                updateDisplay();
+                this.reset();
+                document.getElementById('discharge-date').value = '';
+                
+                // Log da observação
+                console.log('Baixa registrada:', { animalNumber, observation });
+                
+                alert('Baixa registrada com sucesso!');
+            } else {
+                alert('Não há animais para dar baixa!');
+            }
+        });
+
+        // Define a data atual nos campos de data
+        const todayISO = new Date().toISOString().split('T')[0];
+        document.getElementById('discharge-date').value = todayISO;
+        document.getElementById('arrival-date').value = todayISO;
+        document.getElementById('last-weighing-date').value = todayISO;
     </script>
 </body>
 </html>
