@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazenda App - Gestão de Rebanho</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-48x48.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-48x48.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="shortcut icon" href="/icons/icon-48x48.png">
     <style>
         * {
             margin: 0;
@@ -933,7 +938,17 @@
                         // Calcular estatísticas
                         herdData.animals = bovData.length;
                         herdData.discharges = 0; // Por enquanto, sem rota específica para baixas
-                        herdData.weight = bovData.reduce((total, bovino) => total + (parseFloat(bovino.peso) || 0), 0);
+                        
+                        // Buscar peso total do rebanho através da rota específica
+                        const pesoResponse = await fetch(`${API_BASE_URL}/rebanho/peso-total/${fazendaId}`);
+                        const pesoData = await pesoResponse.json();
+                        
+                        if (pesoData.success) {
+                            herdData.weight = pesoData.peso_total;
+                        } else {
+                            // Fallback: calcular a partir dos bovinos se a rota falhar
+                            herdData.weight = bovData.reduce((total, bovino) => total + (parseFloat(bovino.peso) || 0), 0);
+                        }
 
                         updateDisplay();
                     }

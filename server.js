@@ -202,25 +202,25 @@ app.get('/fazendas/:id_usuario', async (req, res) => {
 //-------------------------------------------------------------------------------------
 // 📌 4 - Cadastro de Bovino
 app.post('/cadastrar-bovino', async (req, res) => {
-    const { id_fazenda, numero_brinco, peso, data_nascimento, raca } = req.body;
+    const { id_fazenda, numero_boi, peso, data_nascimento, raca } = req.body;
 
-    if (!id_fazenda || !numero_brinco || !peso || !data_nascimento) {
-        return res.status(400).json({ success: false, message: 'ID da fazenda, número do brinco, peso e data de nascimento são obrigatórios.' });
+    if (!id_fazenda || !numero_boi || !peso || !data_nascimento) {
+        return res.status(400).json({ success: false, message: 'ID da fazenda, número do boi, peso e data de nascimento são obrigatórios.' });
     }
 
     try {
         const [existing] = await pool.execute(
-            'SELECT id_bovino FROM bovinos WHERE numero_brinco = ? AND id_fazenda = ?',
-            [numero_brinco, id_fazenda]
+            'SELECT id_bovino FROM bovinos WHERE numero_boi = ? AND id_fazenda = ?',
+            [numero_boi, id_fazenda]
         );
 
         if (existing.length > 0) {
-            return res.status(409).json({ success: false, message: 'Já existe um bovino com este número de brinco nesta fazenda.' });
+            return res.status(409).json({ success: false, message: 'Já existe um bovino com este número nesta fazenda.' });
         }
 
         await pool.execute(
-            'INSERT INTO bovinos (id_fazenda, numero_brinco, peso, data_nascimento, raca) VALUES (?, ?, ?, ?, ?)',
-            [id_fazenda, numero_brinco, peso, data_nascimento, raca || null]
+            'INSERT INTO bovinos (id_fazenda, numero_boi, peso, data_nascimento, raca) VALUES (?, ?, ?, ?, ?)',
+            [id_fazenda, numero_boi, peso, data_nascimento, raca || null]
         );
 
         res.status(201).json({ success: true, message: 'Bovino cadastrado com sucesso!' });
@@ -351,16 +351,21 @@ app.get('/pesagens/bovino/:id_bovino', async (req, res) => {
 });
 
 //-------------------------------------------------------------------------------------
-// 📌 12 - Listar Pesagens de uma Fazenda (últimas pesagens)
+// 📌 12 - Listar Pesagens de uma Fazenda (últimas pesagens de cada bovino)
 app.get('/pesagens/fazenda/:id_fazenda', async (req, res) => {
     const { id_fazenda } = req.params;
 
     try {
         const [rows] = await pool.execute(
-            `SELECT p.*, b.numero_brinco, b.id_bovino
+            `SELECT p.*, b.numero_boi, b.id_bovino
              FROM pesagens p
              JOIN bovinos b ON p.id_bovino = b.id_bovino
              WHERE b.id_fazenda = ?
+             AND p.id_pesagem IN (
+                 SELECT MAX(p2.id_pesagem)
+                 FROM pesagens p2
+                 WHERE p2.id_bovino = b.id_bovino
+             )
              ORDER BY p.data_pesagem DESC`,
             [id_fazenda]
         );
@@ -369,6 +374,34 @@ app.get('/pesagens/fazenda/:id_fazenda', async (req, res) => {
 
     } catch (error) {
         console.error('Erro ao listar pesagens da fazenda:', error);
+        res.status(500).json({ success: false, message: 'Erro no servidor.' });
+    }
+});
+
+//-------------------------------------------------------------------------------------
+// 📌 13 - Obter Peso Total do Rebanho
+app.get('/rebanho/peso-total/:id_fazenda', async (req, res) => {
+    const { id_fazenda } = req.params;
+
+    try {
+        const [rows] = await pool.execute(
+            `SELECT SUM(p.peso) as peso_total
+             FROM pesagens p
+             JOIN bovinos b ON p.id_bovino = b.id_bovino
+             WHERE b.id_fazenda = ?
+             AND p.id_pesagem IN (
+                 SELECT MAX(p2.id_pesagem)
+                 FROM pesagens p2
+                 WHERE p2.id_bovino = b.id_bovino
+             )`,
+            [id_fazenda]
+        );
+
+        const pesoTotal = rows[0]?.peso_total || 0;
+        res.json({ success: true, peso_total: parseFloat(pesoTotal) });
+
+    } catch (error) {
+        console.error('Erro ao calcular peso total do rebanho:', error);
         res.status(500).json({ success: false, message: 'Erro no servidor.' });
     }
 });
