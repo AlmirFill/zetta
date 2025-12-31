@@ -828,8 +828,11 @@
     </div>
 
     <script>
-        // Configuração da API - usa localhost primeiro, fallback para remoto
-        let API_BASE_URL = 'http://localhost:3000';
+        // Define API_BASE_URL imediatamente (antes de qualquer outro script)
+        window.API_BASE_URL = window.location.origin;
+        
+        // Configuração da API
+        let API_BASE_URL = window.API_BASE_URL;
         // Função para obter cookie
         function getCookie(name) {
             const nameEQ = name + "=";
