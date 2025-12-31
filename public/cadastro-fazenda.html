@@ -46,7 +46,8 @@
         }
 
         input[type="text"],
-        input[type="date"] {
+        input[type="date"],
+        select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
@@ -99,6 +100,12 @@
         <h1>Cadastrar Nova Fazenda</h1>
         <form id="farm-form">
             <div class="form-group">
+                <label for="id_usuario">Selecionar Usuário *</label>
+                <select id="id_usuario" name="id_usuario" required>
+                    <option value="">Carregando usuários...</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="nome_fazenda">Nome da Fazenda</label>
                 <input type="text" id="nome_fazenda" name="nome_fazenda" required>
             </div>
@@ -124,6 +131,33 @@
             const form = document.getElementById('farm-form');
             const messageContainer = document.getElementById('message-container');
             const cnpjInput = document.getElementById('cnpj');
+            const usuarioSelect = document.getElementById('id_usuario');
+
+            // Carregar lista de usuários
+            async function carregarUsuarios() {
+                try {
+                    const response = await fetch(`${window.API_BASE_URL}/usuarios`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.usuarios) {
+                        usuarioSelect.innerHTML = '<option value="">Selecione um usuário...</option>';
+                        data.usuarios.forEach(usuario => {
+                            const option = document.createElement('option');
+                            option.value = usuario.id_usuario;
+                            option.textContent = `${usuario.nome} (${usuario.email})`;
+                            usuarioSelect.appendChild(option);
+                        });
+                    } else {
+                        usuarioSelect.innerHTML = '<option value="">Erro ao carregar usuários</option>';
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar usuários:', error);
+                    usuarioSelect.innerHTML = '<option value="">Erro ao carregar usuários</option>';
+                }
+            }
+
+            // Carregar usuários ao iniciar
+            carregarUsuarios();
 
             // Função para ler um cookie
             function getCookie(name) {
@@ -152,11 +186,11 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                // Pega o ID do usuário dos cookies
-                const id_usuario = getCookie('id_usuario');
+                // Pega o ID do usuário do select
+                const id_usuario = usuarioSelect.value;
                 
                 if (!id_usuario) {
-                    showMessage('Usuário não autenticado. Faça login novamente.', 'error');
+                    showMessage('Por favor, selecione um usuário.', 'error');
                     return;
                 }
 
