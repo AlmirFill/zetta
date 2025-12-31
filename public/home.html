@@ -828,135 +828,124 @@
     </div>
 
     <script>
-        // Data atual para inicialização
-        const today = new Date();
-        const formattedToday = today.toLocaleDateString('pt-BR');
+        // Configuração da API - usa localhost primeiro, fallback para remoto
+        let API_BASE_URL = 'http://localhost:3000';
+        
+        
+        
+        // Função para obter cookie
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
 
-        // Dados iniciais
+        // Dados da fazenda e rebanho
         let herdData = {
-            animals: 143,
-            discharges: 8,
-            weight: 85340, // kg (incluindo o boi 123 com 640kg)
-            arrobaPrice: 300, // R$ por arroba (15kg)
-            lastWeighingDate: '30/03/2025' // Data inicial da última pesagem
+            animals: 0,
+            discharges: 0,
+            weight: 0,
+            arrobaPrice: 300,
+            lastWeighingDate: new Date().toLocaleDateString('pt-BR'),
+            fazendaInfo: {}
         };
 
-        // Armazenamento de animais (simulado) com histórico de pesagens
-        let animals = [
-            { 
-                number: '001', 
-                birthDate: '2023-05-15',
-                arrivalDate: '2023-06-01',
-                currentWeight: 600,
-                lastWeighingDate: '2025-12-28',
-                color: 'preto',
-                breed: 'nelore',
-                vaccination: 'Aftosa, Brucelose',
-                initialWeight: 200,
-                batch: 'Lote A',
-                separationWeight: 450,
-                pasture: 'pasto-1',
-                gender: 'macho',
-                weightHistory: [
-                    { date: '2023-06-01', weight: 200 },
-                    { date: '2023-09-15', weight: 320 },
-                    { date: '2023-12-20', weight: 410 },
-                    { date: '2024-03-10', weight: 480 },
-                    { date: '2024-06-25', weight: 520 },
-                    { date: '2024-09-30', weight: 560 },
-                    { date: '2024-12-15', weight: 580 },
-                    { date: '2025-03-20', weight: 590 },
-                    { date: '2025-06-10', weight: 595 },
-                    { date: '2025-09-05', weight: 598 },
-                    { date: '2025-12-28', weight: 600 }
-                ]
-            },
-            { 
-                number: '002', 
-                birthDate: '2023-06-20',
-                arrivalDate: '2023-07-10',
-                currentWeight: 550,
-                lastWeighingDate: '2025-12-28',
-                color: 'branco',
-                breed: 'angus',
-                vaccination: 'Aftosa',
-                initialWeight: 180,
-                batch: 'Lote B',
-                separationWeight: 420,
-                pasture: 'pasto-2',
-                gender: 'femea',
-                weightHistory: [
-                    { date: '2023-07-10', weight: 180 },
-                    { date: '2023-10-20', weight: 280 },
-                    { date: '2024-01-15', weight: 350 },
-                    { date: '2024-04-30', weight: 420 },
-                    { date: '2024-08-10', weight: 470 },
-                    { date: '2024-11-25', weight: 500 },
-                    { date: '2025-02-28', weight: 520 },
-                    { date: '2025-05-15', weight: 535 },
-                    { date: '2025-08-20', weight: 545 },
-                    { date: '2025-11-10', weight: 548 },
-                    { date: '2025-12-28', weight: 550 }
-                ]
-            },
-            { 
-                number: '003', 
-                birthDate: '2023-04-10',
-                arrivalDate: '2023-05-05',
-                currentWeight: 620,
-                lastWeighingDate: '2025-12-28',
-                color: 'marrom',
-                breed: 'brangus',
-                vaccination: 'Aftosa, Brucelose, Raiva',
-                initialWeight: 220,
-                batch: 'Lote A',
-                separationWeight: 480,
-                pasture: 'pasto-3',
-                gender: 'macho',
-                weightHistory: [
-                    { date: '2023-05-05', weight: 220 },
-                    { date: '2023-08-12', weight: 340 },
-                    { date: '2023-11-18', weight: 430 },
-                    { date: '2024-02-25', weight: 500 },
-                    { date: '2024-05-30', weight: 550 },
-                    { date: '2024-09-10', weight: 580 },
-                    { date: '2024-12-05', weight: 600 },
-                    { date: '2025-03-15', weight: 610 },
-                    { date: '2025-06-20', weight: 615 },
-                    { date: '2025-09-25', weight: 618 },
-                    { date: '2025-12-28', weight: 620 }
-                ]
-            },
-            // Exemplo do boi 123 com pesagens em janeiro e março
-            { 
-                number: '123', 
-                birthDate: '2022-08-15',
-                arrivalDate: '2023-01-10',
-                currentWeight: 640,
-                lastWeighingDate: '2025-03-30',
-                color: 'preto',
-                breed: 'nelore',
-                vaccination: 'Aftosa, Brucelose, Raiva, Carbúnculo',
-                initialWeight: 180,
-                batch: 'Lote C',
-                separationWeight: 480,
-                pasture: 'pasto-2',
-                gender: 'macho',
-                weightHistory: [
-                    { date: '2023-01-10', weight: 180 },
-                    { date: '2023-06-20', weight: 320 },
-                    { date: '2023-12-15', weight: 450 },
-                    { date: '2024-05-10', weight: 520 },
-                    { date: '2024-11-25', weight: 580 },
-                    { date: '2025-01-30', weight: 500 },
-                    { date: '2025-03-30', weight: 640 }
-                ]
-            }
-        ];
-
-        // Array para armazenar animal selecionado para evolução
+        let animals = [];
         let selectedAnimal = null;
         let goalWeight = null;
+        let fazendaId = null;
+        let idUsuario = null;
+
+        // Inicializar dados da fazenda
+        async function initializeFazenda() {
+            // Obter ID do usuário do cookie
+            idUsuario = getCookie('id_usuario');
+            
+            if (!idUsuario) {
+                alert('ID do usuário não encontrado nos cookies. Redirecionando para login...');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                // Buscar todas as fazendas do usuário
+                const response = await fetch(`${API_BASE_URL}/fazendas/${idUsuario}`);
+                const data = await response.json();
+
+                if (data.success && data.fazendas && data.fazendas.length > 0) {
+                    // Usar a primeira fazenda (index 0) como fazenda atual
+                    const fazendaAtual = data.fazendas[0];
+                    fazendaId = fazendaAtual.id_fazenda;
+                    
+                    // Atualizar informações da fazenda
+                    herdData.fazendaInfo = fazendaAtual;
+                    document.querySelector('.farm-name').textContent = fazendaAtual.nome_fazenda;
+                    document.querySelector('.farm-address').textContent = fazendaAtual.localizacao || 'Localização não informada';
+
+                    // Buscar bovinos da fazenda
+                    const bovResponse = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
+                    const bovData = await bovResponse.json();
+
+                    if (Array.isArray(bovData)) {
+                        // Armazenar bovinos
+                        animals = bovData.map(bovino => ({
+                            id: bovino.id_bovino,
+                            number: bovino.numero_brinco,
+                            birthDate: bovino.data_nascimento,
+                            currentWeight: bovino.peso,
+                            color: bovino.cor || '',
+                            breed: bovino.raca || '',
+                            gender: bovino.sexo || '',
+                            weightHistory: [{ date: bovino.data_atualizacao || new Date().toISOString().split('T')[0], weight: bovino.peso }]
+                        }));
+
+                        // Buscar pesagens da fazenda
+                        const pesResponse = await fetch(`${API_BASE_URL}/pesagens/fazenda/${fazendaId}`);
+                        const pesData = await pesResponse.json();
+
+                        if (pesData.success && Array.isArray(pesData.pesagens)) {
+                            // Atualizar histórico de pesagens dos bovinos
+                            pesData.pesagens.forEach(pesagem => {
+                                const animal = animals.find(a => a.id === pesagem.id_bovino);
+                                if (animal) {
+                                    animal.weightHistory.push({
+                                        date: pesagem.data_pesagem,
+                                        weight: pesagem.peso
+                                    });
+                                }
+                            });
+                            
+                            // Ordenar histórico de pesagens por data
+                            animals.forEach(animal => {
+                                animal.weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+                            });
+
+                            // Encontrar última pesagem
+                            const ultimaPesagem = pesData.pesagens.length > 0 ? pesData.pesagens[0].data_pesagem : new Date().toISOString().split('T')[0];
+                            herdData.lastWeighingDate = new Date(ultimaPesagem).toLocaleDateString('pt-BR');
+                        }
+
+                        // Calcular estatísticas
+                        herdData.animals = bovData.length;
+                        herdData.discharges = 0; // Por enquanto, sem rota específica para baixas
+                        herdData.weight = bovData.reduce((total, bovino) => total + (parseFloat(bovino.peso) || 0), 0);
+
+                        updateDisplay();
+                    }
+                } else {
+                    alert('Nenhuma fazenda encontrada para o usuário. Redirecionando para home...');
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Erro ao buscar dados das fazendas:', error);
+                alert('Erro ao conectar com a API. Verifique se o servidor está rodando em ' + API_BASE_URL);
+            }
+        }
 
         // Função para atualizar os dados exibidos
         function updateDisplay() {
@@ -964,28 +953,21 @@
             document.getElementById('total-discharges').textContent = herdData.discharges;
             document.getElementById('herd-weight').textContent = herdData.weight.toLocaleString('pt-BR');
             
-            // Cálculo do valor do rebanho: (peso em kg / 15) * preço da arroba
             const herdValue = (herdData.weight / 15) * herdData.arrobaPrice;
             document.getElementById('herd-value').textContent = herdValue.toLocaleString('pt-BR', { 
                 style: 'currency', 
                 currency: 'BRL' 
             });
             
-            // Atualiza a data da última pesagem
             document.getElementById('last-weighing-date').textContent = herdData.lastWeighingDate;
         }
-
-        // Atualiza a exibição inicial
-        updateDisplay();
 
         // Manipulação das abas
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                // Remove classe active de todas as abas
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 
-                // Adiciona classe active à aba clicada
                 tab.classList.add('active');
                 const tabId = tab.getAttribute('data-tab');
                 document.getElementById(`${tabId}-tab`).classList.add('active');
@@ -997,20 +979,13 @@
             const prefix = formPrefix ? formPrefix + '-' : '';
             document.getElementById(`${prefix}animal-number`).value = animal.number || '';
             document.getElementById(`${prefix}birth-date`).value = animal.birthDate || '';
-            document.getElementById(`${prefix}arrival-date`).value = animal.arrivalDate || '';
             document.getElementById(`${prefix}current-weight`).value = animal.currentWeight || '';
-            document.getElementById(`${prefix}last-weighing-date`).value = animal.lastWeighingDate || '';
             document.getElementById(`${prefix}color`).value = animal.color || '';
             document.getElementById(`${prefix}breed`).value = animal.breed || '';
-            document.getElementById(`${prefix}vaccination`).value = animal.vaccination || '';
-            document.getElementById(`${prefix}initial-weight`).value = animal.initialWeight || '';
-            document.getElementById(`${prefix}batch`).value = animal.batch || '';
-            document.getElementById(`${prefix}separation-weight`).value = animal.separationWeight || '';
-            document.getElementById(`${prefix}pasture`).value = animal.pasture || '';
             document.getElementById(`${prefix}gender`).value = animal.gender || '';
         }
 
-        // Função para exibir histórico de pesagens e selecionar animal
+        // Função para exibir histórico de pesagens
         function displayWeightHistory(animal) {
             const weightsList = document.getElementById('weights-list');
             weightsList.innerHTML = '';
@@ -1020,29 +995,24 @@
                 return;
             }
             
-            // Armazena o animal selecionado
             selectedAnimal = animal;
             
-            animal.weightHistory.forEach((weightEntry, index) => {
+            animal.weightHistory.forEach((weightEntry) => {
                 const weightItem = document.createElement('div');
                 weightItem.className = 'weight-item';
                 weightItem.innerHTML = `
                     <strong>${formatDate(weightEntry.date)}</strong> - ${weightEntry.weight} kg
                 `;
                 weightItem.addEventListener('click', () => {
-                    // Marca como selecionado visualmente
                     document.querySelectorAll('.weight-item').forEach(item => {
                         item.classList.remove('selected');
                     });
                     weightItem.classList.add('selected');
-                    
-                    // Atualiza o gráfico com a meta e o peso atual
                     updatePieChart(weightEntry.weight);
                 });
                 weightsList.appendChild(weightItem);
             });
             
-            // Seleciona automaticamente a última pesagem
             if (animal.weightHistory.length > 0) {
                 const lastIndex = animal.weightHistory.length - 1;
                 weightsList.children[lastIndex].classList.add('selected');
@@ -1064,21 +1034,17 @@
             chartPlaceholder.style.display = 'none';
             pieChartSection.style.display = 'block';
             
-            // Calcula o progresso
             const progress = Math.min(100, (currentWeight / goalWeight) * 100);
-            const progressAngle = progress * 3.6; // 360 graus para 100%
+            const progressAngle = progress * 3.6;
             
-            // Atualiza o gráfico de pizza
             const pieChart = document.getElementById('pie-chart');
             pieChart.style.background = `conic-gradient(
                 #4a7c59 0deg ${progressAngle}deg,
                 #e74c3c ${progressAngle}deg 360deg
             )`;
             
-            // Atualiza o texto central
             document.getElementById('pie-center-text').textContent = `${Math.round(progress)}%`;
             
-            // Atualiza os detalhes
             const chartDetails = document.getElementById('chart-details');
             chartDetails.innerHTML = `
                 <div class="detail-item">
@@ -1106,17 +1072,6 @@
             return date.toLocaleDateString('pt-BR');
         }
 
-        // Atualiza a data da última pesagem quando um novo bovino é cadastrado
-        function updateLastWeighingDate(newDate) {
-            const newDateObj = new Date(newDate);
-            const currentLastDate = new Date(herdData.lastWeighingDate.split('/').reverse().join('-'));
-            
-            if (newDateObj > currentLastDate) {
-                herdData.lastWeighingDate = newDateObj.toLocaleDateString('pt-BR');
-                document.getElementById('last-weighing-date').textContent = herdData.lastWeighingDate;
-            }
-        }
-
         // Função para definir meta
         document.getElementById('set-goal-btn').addEventListener('click', function() {
             const goalInput = document.getElementById('goal-weight').value;
@@ -1124,7 +1079,6 @@
                 goalWeight = parseFloat(goalInput);
                 document.getElementById('goal-display').textContent = `Meta: ${goalWeight} kg`;
                 
-                // Se já houver um animal selecionado, atualiza o gráfico
                 if (selectedAnimal && selectedAnimal.weightHistory.length > 0) {
                     const currentWeight = selectedAnimal.weightHistory[selectedAnimal.weightHistory.length - 1].weight;
                     updatePieChart(currentWeight);
@@ -1134,14 +1088,14 @@
             }
         });
 
-        // Função de busca de animal para cadastro
+        // Busca de animal para cadastro
         document.getElementById('search-btn-register').addEventListener('click', function() {
             const searchNumber = document.getElementById('search-animal-number-register').value.trim();
             if (searchNumber) {
                 const foundAnimal = animals.find(animal => animal.number === searchNumber);
                 if (foundAnimal) {
                     fillAnimalForm(foundAnimal);
-                    alert(`Animal encontrado e dados preenchidos!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
+                    alert(`Animal encontrado!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
                 } else {
                     alert('Animal não encontrado no cadastro.');
                 }
@@ -1150,14 +1104,14 @@
             }
         });
 
-        // Função de busca de animal para baixa
+        // Busca de animal para baixa
         document.getElementById('search-btn-discharge').addEventListener('click', function() {
             const searchNumber = document.getElementById('search-animal-number-discharge').value.trim();
             if (searchNumber) {
                 const foundAnimal = animals.find(animal => animal.number === searchNumber);
                 if (foundAnimal) {
                     fillAnimalForm(foundAnimal, 'discharge');
-                    alert(`Animal encontrado e dados preenchidos!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
+                    alert(`Animal encontrado!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
                 } else {
                     alert('Animal não encontrado no cadastro.');
                 }
@@ -1166,7 +1120,7 @@
             }
         });
 
-        // Função de busca de animal para evolução
+        // Busca de animal para evolução
         document.getElementById('search-btn-evolution').addEventListener('click', function() {
             const searchNumber = document.getElementById('search-animal-number-evolution').value.trim();
             if (searchNumber) {
@@ -1190,92 +1144,107 @@
         });
 
         // Formulário de cadastro de bovino
-        document.getElementById('register-form').addEventListener('submit', function(e) {
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const animalNumber = document.getElementById('animal-number').value;
             const currentWeight = parseFloat(document.getElementById('current-weight').value);
-            const lastWeighingDate = document.getElementById('last-weighing-date').value;
-            
-            // Cria novo animal
-            const newAnimal = {
-                number: animalNumber,
-                birthDate: document.getElementById('birth-date').value,
-                arrivalDate: document.getElementById('arrival-date').value,
-                currentWeight: currentWeight,
-                lastWeighingDate: lastWeighingDate,
-                color: document.getElementById('color').value,
-                breed: document.getElementById('breed').value,
-                vaccination: document.getElementById('vaccination').value,
-                initialWeight: parseFloat(document.getElementById('initial-weight').value),
-                batch: document.getElementById('batch').value,
-                separationWeight: parseFloat(document.getElementById('separation-weight').value) || null,
-                pasture: document.getElementById('pasture').value,
-                gender: document.getElementById('gender').value,
-                weightHistory: [
-                    { date: document.getElementById('arrival-date').value, weight: parseFloat(document.getElementById('initial-weight').value) },
-                    { date: lastWeighingDate, weight: currentWeight }
-                ]
-            };
-            
-            // Adiciona animal ao array
-            animals.push(newAnimal);
-            
-            // Atualiza os dados do rebanho
-            herdData.animals += 1;
-            herdData.weight += currentWeight;
-            
-            // Atualiza a data da última pesagem se necessário
-            updateLastWeighingDate(lastWeighingDate);
-            
-            updateDisplay();
-            this.reset();
-            
-            // Reseta as datas para o valor atual
-            const todayISO = new Date().toISOString().split('T')[0];
-            document.getElementById('arrival-date').value = todayISO;
-            document.getElementById('last-weighing-date').value = todayISO;
-            
-            alert('Bovino cadastrado com sucesso!');
-        });
+            const birthDate = document.getElementById('birth-date').value;
+            const breed = document.getElementById('breed').value;
 
-        // Formulário de baixa
-        document.getElementById('discharge-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const animalNumber = document.getElementById('discharge-animal-number').value;
-            const currentWeight = parseFloat(document.getElementById('discharge-current-weight').value) || 0;
-            const observation = document.getElementById('discharge-observation').value;
-            
-            if (herdData.animals > 0) {
-                // Remove o animal do array
-                const animalIndex = animals.findIndex(animal => animal.number === animalNumber);
-                if (animalIndex !== -1) {
-                    animals.splice(animalIndex, 1);
+            try {
+                const response = await fetch(`${API_BASE_URL}/cadastrar-bovino`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_fazenda: fazendaId,
+                        numero_brinco: animalNumber,
+                        peso: currentWeight,
+                        data_nascimento: birthDate,
+                        raca: breed
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Adicionar animal ao array local
+                    animals.push({
+                        number: animalNumber,
+                        birthDate: birthDate,
+                        currentWeight: currentWeight,
+                        breed: breed,
+                        weightHistory: [{ date: new Date().toISOString().split('T')[0], weight: currentWeight }]
+                    });
+
+                    herdData.animals += 1;
+                    herdData.weight += currentWeight;
+                    updateDisplay();
+                    this.reset();
+                    alert('Bovino cadastrado com sucesso!');
+                } else {
+                    alert('Erro ao cadastrar bovino: ' + result.message);
                 }
-                
-                herdData.discharges += 1;
-                herdData.weight = Math.max(0, herdData.weight - currentWeight);
-                herdData.animals = Math.max(0, herdData.animals - 1);
-                
-                updateDisplay();
-                this.reset();
-                document.getElementById('discharge-date').value = '';
-                
-                // Log da observação
-                console.log('Baixa registrada:', { animalNumber, observation });
-                
-                alert('Baixa registrada com sucesso!');
-            } else {
-                alert('Não há animais para dar baixa!');
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao cadastrar bovino');
             }
         });
 
-        // Define a data atual nos campos de data
-        const todayISO = new Date().toISOString().split('T')[0];
-        document.getElementById('discharge-date').value = todayISO;
-        document.getElementById('arrival-date').value = todayISO;
-        document.getElementById('last-weighing-date').value = todayISO;
+        // Formulário de baixa
+        document.getElementById('discharge-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const animalNumber = document.getElementById('discharge-animal-number').value;
+            const reason = document.getElementById('discharge-reason').value;
+            const observation = document.getElementById('discharge-observation').value;
+
+            const animal = animals.find(a => a.number === animalNumber);
+            
+            if (!animal) {
+                alert('Animal não encontrado');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bovino/${animal.id}/baixa`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        motivo: reason,
+                        observacao: observation
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Remover animal do array local
+                    const index = animals.findIndex(a => a.number === animalNumber);
+                    if (index !== -1) {
+                        herdData.weight -= animals[index].currentWeight;
+                        animals.splice(index, 1);
+                    }
+
+                    herdData.discharges += 1;
+                    herdData.animals = Math.max(0, herdData.animals - 1);
+                    updateDisplay();
+                    this.reset();
+                    alert('Baixa registrada com sucesso!');
+                } else {
+                    alert('Erro ao registrar baixa: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao registrar baixa');
+            }
+        });
+
+        // Inicializar ao carregar a página
+        document.addEventListener('DOMContentLoaded', async () => {
+            // await detectarAPI();
+            initializeFazenda();
+        });
     </script>
 </body>
 </html>
