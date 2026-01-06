@@ -30,10 +30,6 @@
             <input id="numero_brinco" />
         </div>
         <div class="form-group">
-            <label for="peso">Peso (kg)</label>
-            <input id="peso" type="number" step="0.01" />
-        </div>
-        <div class="form-group">
             <label for="data_nascimento">Data de Nascimento</label>
             <input id="data_nascimento" type="date" />
         </div>
@@ -75,15 +71,14 @@ function getCookie(name) {
 document.getElementById('submitBtn').addEventListener('click', async ()=>{
     const id_fazenda = document.getElementById('id_fazenda').value;
     const numero_brinco = document.getElementById('numero_brinco').value.trim();
-    const peso = document.getElementById('peso').value;
     const data_nascimento = document.getElementById('data_nascimento').value;
     const raca = document.getElementById('raca').value.trim();
     const msg = document.getElementById('msg');
-    if(!id_fazenda || !numero_brinco || !peso || !data_nascimento){ msg.textContent = 'Preencha os campos obrigatórios'; return; }
+    if(!id_fazenda || !numero_brinco){ msg.textContent = 'Preencha os campos obrigatórios (Fazenda e Brinco)'; return; }
     try{
         const res = await fetch(`${API_BASE_URL}/cadastrar-bovino`, {
             method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ id_fazenda, numero_brinco, peso, data_nascimento, raca })
+            body: JSON.stringify({ id_fazenda, numero_brinco, data_nascimento, raca })
         });
         const j = await res.json();
         if(res.ok){ msg.style.color='green'; msg.textContent = j.message || 'Cadastrado'; setTimeout(()=>location.href=`/bovinos.html?id_fazenda=${id_fazenda}`,800); }

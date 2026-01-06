@@ -483,6 +483,43 @@
             font-weight: 700;
         }
 
+        /* Em desenvolvimento */
+        .under-development {
+            position: relative;
+        }
+
+        .under-development > *:not(.dev-overlay) {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .dev-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .dev-overlay h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .dev-overlay p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .farm-name {
@@ -556,6 +593,7 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" data-tab="register">Cadastrar Bovino</button>
+            <button class="tab" data-tab="weighing">Pesagem</button>
             <button class="tab" data-tab="discharge">Baixa</button>
             <button class="tab" data-tab="evolution">Evolução</button>
         </div>
@@ -577,86 +615,71 @@
             <form id="register-form">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="animal-number">Número do Animal *</label>
+                        <label for="animal-number">Número do Brinco *</label>
                         <input type="text" id="animal-number" placeholder="Ex: 001" required>
                     </div>
                     <div class="form-group">
-                        <label for="birth-date">Data de Nascimento *</label>
-                        <input type="date" id="birth-date" required>
+                        <label for="birth-date">Data de Nascimento</label>
+                        <input type="date" id="birth-date">
                     </div>
                     <div class="form-group">
-                        <label for="arrival-date">Data de Chegada *</label>
-                        <input type="date" id="arrival-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="current-weight">Peso Atual (kg) *</label>
-                        <input type="number" id="current-weight" placeholder="Ex: 600" min="1" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="last-weighing-date">Data da Última Pesagem *</label>
-                        <input type="date" id="last-weighing-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="color">Cor *</label>
-                        <select id="color" required>
-                            <option value="">Selecione...</option>
-                            <option value="preto">Preto</option>
-                            <option value="branco">Branco</option>
-                            <option value="marrom">Marrom</option>
-                            <option value="vermelho">Vermelho</option>
-                            <option value="cinza">Cinza</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="breed">Raça *</label>
-                        <select id="breed" required>
+                        <label for="breed">Raça</label>
+                        <select id="breed">
                             <option value="">Selecione...</option>
                             <option value="nelore">Nelore</option>
                             <option value="angus">Angus</option>
                             <option value="brangus">Brangus</option>
                             <option value="hereford">Hereford</option>
                             <option value="charoles">Charolês</option>
+                            <option value="simental">Simental</option>
+                            <option value="brahman">Brahman</option>
+                            <option value="gir">Gir</option>
                             <option value="outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="vaccination">Vacina *</label>
-                        <input type="text" id="vaccination" placeholder="Ex: Aftosa, Brucelose">
-                    </div>
-                    <div class="form-group">
-                        <label for="initial-weight">Peso Inicial (kg) *</label>
-                        <input type="number" id="initial-weight" placeholder="Ex: 200" min="1" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="batch">Lote *</label>
-                        <input type="text" id="batch" placeholder="Ex: Lote A">
-                    </div>
-                    <div class="form-group">
-                        <label for="separation-weight">Peso de Apartação (kg)</label>
-                        <input type="number" id="separation-weight" placeholder="Ex: 450" min="1" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="pasture">Qual Pasto *</label>
-                        <select id="pasture" required>
-                            <option value="">Selecione...</option>
-                            <option value="pasto-1">Pasto 1</option>
-                            <option value="pasto-2">Pasto 2</option>
-                            <option value="pasto-3">Pasto 3</option>
-                            <option value="pasto-4">Pasto 4</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Sexo *</label>
-                        <select id="gender" required>
-                            <option value="">Selecione...</option>
-                            <option value="macho">Macho</option>
-                            <option value="femea">Fêmea</option>
                         </select>
                     </div>
                 </div>
                 <button type="submit" class="submit-btn">Cadastrar Bovino</button>
+            </form>
+        </div>
+
+        <div class="tab-content" id="weighing-tab">
+            <h2 class="tab-title">Registrar Pesagem</h2>
+            
+            <!-- Search Section -->
+            <div class="search-section">
+                <h3>Buscar Bovino para Pesagem</h3>
+                <div class="search-group">
+                    <input type="text" id="search-animal-number-weighing" placeholder="Digite o número do brinco...">
+                    <button class="search-btn" id="search-btn-weighing">Buscar</button>
+                </div>
+            </div>
+
+            <!-- Weighing Form -->
+            <form id="weighing-form">
+                <input type="hidden" id="weighing-id-bovino">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="weighing-animal-number">Número do Brinco *</label>
+                        <input type="text" id="weighing-animal-number" placeholder="Ex: 001" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="weighing-breed">Raça</label>
+                        <input type="text" id="weighing-breed" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="weighing-weight">Peso (kg) *</label>
+                        <input type="number" id="weighing-weight" placeholder="Ex: 450" min="1" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="weighing-date">Data da Pesagem *</label>
+                        <input type="date" id="weighing-date" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="weighing-observation">Observação</label>
+                    <textarea id="weighing-observation" placeholder="Digite observações sobre a pesagem..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Registrar Pesagem</button>
             </form>
         </div>
 
@@ -665,108 +688,39 @@
             
             <!-- Search Section for Discharge -->
             <div class="search-section">
-                <h3>Buscar Cadastro Individual</h3>
+                <h3>Buscar Bovino para Baixa</h3>
                 <div class="search-group">
-                    <input type="text" id="search-animal-number-discharge" placeholder="Digite o número do animal...">
+                    <input type="text" id="search-animal-number-discharge" placeholder="Digite o número do brinco...">
                     <button class="search-btn" id="search-btn-discharge">Buscar</button>
                 </div>
             </div>
 
-            <!-- Discharge Form with all animal info -->
+            <!-- Discharge Form -->
             <form id="discharge-form">
+                <input type="hidden" id="discharge-id-bovino">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="discharge-animal-number">Número do Animal *</label>
-                        <input type="text" id="discharge-animal-number" placeholder="Ex: 001" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-birth-date">Data de Nascimento</label>
-                        <input type="date" id="discharge-birth-date">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-arrival-date">Data de Chegada</label>
-                        <input type="date" id="discharge-arrival-date">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-current-weight">Peso Atual (kg)</label>
-                        <input type="number" id="discharge-current-weight" placeholder="Ex: 600" min="1" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-last-weighing-date">Data da Última Pesagem</label>
-                        <input type="date" id="discharge-last-weighing-date">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-color">Cor</label>
-                        <select id="discharge-color">
-                            <option value="">Selecione...</option>
-                            <option value="preto">Preto</option>
-                            <option value="branco">Branco</option>
-                            <option value="marrom">Marrom</option>
-                            <option value="vermelho">Vermelho</option>
-                            <option value="cinza">Cinza</option>
-                            <option value="outros">Outros</option>
-                        </select>
+                        <label for="discharge-animal-number">Número do Brinco *</label>
+                        <input type="text" id="discharge-animal-number" placeholder="Ex: 001" readonly>
                     </div>
                     <div class="form-group">
                         <label for="discharge-breed">Raça</label>
-                        <select id="discharge-breed">
-                            <option value="">Selecione...</option>
-                            <option value="nelore">Nelore</option>
-                            <option value="angus">Angus</option>
-                            <option value="brangus">Brangus</option>
-                            <option value="hereford">Hereford</option>
-                            <option value="charoles">Charolês</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-vaccination">Vacina</label>
-                        <input type="text" id="discharge-vaccination" placeholder="Ex: Aftosa, Brucelose">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-initial-weight">Peso Inicial (kg)</label>
-                        <input type="number" id="discharge-initial-weight" placeholder="Ex: 200" min="1" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-batch">Lote</label>
-                        <input type="text" id="discharge-batch" placeholder="Ex: Lote A">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-separation-weight">Peso de Apartação (kg)</label>
-                        <input type="number" id="discharge-separation-weight" placeholder="Ex: 450" min="1" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-pasture">Qual Pasto</label>
-                        <select id="discharge-pasture">
-                            <option value="">Selecione...</option>
-                            <option value="pasto-1">Pasto 1</option>
-                            <option value="pasto-2">Pasto 2</option>
-                            <option value="pasto-3">Pasto 3</option>
-                            <option value="pasto-4">Pasto 4</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="discharge-gender">Sexo</label>
-                        <select id="discharge-gender">
-                            <option value="">Selecione...</option>
-                            <option value="macho">Macho</option>
-                            <option value="femea">Fêmea</option>
-                        </select>
+                        <input type="text" id="discharge-breed" readonly>
                     </div>
                     <div class="form-group">
                         <label for="discharge-reason">Motivo da Baixa *</label>
                         <select id="discharge-reason" required>
                             <option value="">Selecione...</option>
-                            <option value="venda">Venda</option>
-                            <option value="morte">Morte</option>
-                            <option value="transferencia">Transferência</option>
-                            <option value="abate">Abate</option>
-                            <option value="outros">Outros</option>
+                            <option value="Venda">Venda</option>
+                            <option value="Morte">Morte</option>
+                            <option value="Transferência">Transferência</option>
+                            <option value="Abate">Abate</option>
+                            <option value="Doença">Doença</option>
+                            <option value="Outros">Outros</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="discharge-date">Data *</label>
+                        <label for="discharge-date">Data da Baixa *</label>
                         <input type="date" id="discharge-date" required>
                     </div>
                 </div>
@@ -778,7 +732,12 @@
             </form>
         </div>
 
-        <div class="tab-content" id="evolution-tab">
+        <div class="tab-content under-development" id="evolution-tab">
+            <div class="dev-overlay">
+                <h2>🛠️ Em Desenvolvimento</h2>
+                <p>Esta funcionalidade estará disponível em breve</p>
+            </div>
+            
             <h2 class="tab-title">Evolução do Bovino</h2>
             
             <!-- Search Section for Evolution -->
@@ -897,12 +856,12 @@
                     document.querySelector('.farm-name').textContent = fazendaAtual.nome_fazenda;
                     document.querySelector('.farm-address').textContent = fazendaAtual.localizacao || 'Localização não informada';
 
-                    // Buscar bovinos da fazenda
-                    const bovResponse = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
+                    // Buscar bovinos ATIVOS da fazenda (sem baixa)
+                    const bovResponse = await fetch(`${API_BASE_URL}/bovinos/ativos/${fazendaId}`);
                     const bovData = await bovResponse.json();
 
                     if (Array.isArray(bovData)) {
-                        // Armazenar bovinos
+                        // Armazenar bovinos ativos
                         animals = bovData.map(bovino => ({
                             id: bovino.id_bovino,
                             number: bovino.numero_brinco,
@@ -942,7 +901,11 @@
 
                         // Calcular estatísticas
                         herdData.animals = bovData.length;
-                        herdData.discharges = 0; // Por enquanto, sem rota específica para baixas
+                        
+                        // Buscar baixas da fazenda
+                        const baixasResponse = await fetch(`${API_BASE_URL}/baixas/fazenda/${fazendaId}`);
+                        const baixasData = await baixasResponse.json();
+                        herdData.discharges = baixasData.success ? baixasData.baixas.length : 0;
                         
                         // Buscar peso total do rebanho através da rota específica
                         const pesoResponse = await fetch(`${API_BASE_URL}/rebanho/peso-total/${fazendaId}`);
@@ -999,10 +962,7 @@
             const prefix = formPrefix ? formPrefix + '-' : '';
             document.getElementById(`${prefix}animal-number`).value = animal.number || '';
             document.getElementById(`${prefix}birth-date`).value = animal.birthDate || '';
-            document.getElementById(`${prefix}current-weight`).value = animal.currentWeight || '';
-            document.getElementById(`${prefix}color`).value = animal.color || '';
             document.getElementById(`${prefix}breed`).value = animal.breed || '';
-            document.getElementById(`${prefix}gender`).value = animal.gender || '';
         }
 
         // Função para exibir histórico de pesagens
@@ -1108,16 +1068,80 @@
             }
         });
 
+        // Busca de animal para pesagem
+        document.getElementById('search-btn-weighing').addEventListener('click', async function() {
+            const searchNumber = document.getElementById('search-animal-number-weighing').value.trim();
+            if (searchNumber) {
+                try {
+                    // Buscar bovinos da fazenda
+                    const response = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
+                    const bovinos = await response.json();
+                    
+                    // Procurar pelo número do brinco
+                    const foundAnimal = bovinos.find(b => b.numero_boi === searchNumber);
+                    
+                    if (foundAnimal) {
+                        // Preencher formulário com dados encontrados
+                        document.getElementById('weighing-id-bovino').value = foundAnimal.id_bovino;
+                        document.getElementById('weighing-animal-number').value = foundAnimal.numero_boi || '';
+                        document.getElementById('weighing-breed').value = foundAnimal.raca || '';
+                        
+                        // Definir data atual como padrão
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('weighing-date').value = today;
+                        
+                        // Focar no campo de peso
+                        document.getElementById('weighing-weight').focus();
+                        
+                        alert(`Bovino encontrado!\nNúmero: ${foundAnimal.numero_boi}\nRaça: ${foundAnimal.raca || 'Não informada'}`);
+                    } else {
+                        alert('Bovino não encontrado no cadastro.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar bovino:', error);
+                    alert('Erro ao buscar bovino. Verifique a conexão com o servidor.');
+                }
+            } else {
+                alert('Por favor, digite o número do brinco para buscar.');
+            }
+        });
+
         // Busca de animal para cadastro
-        document.getElementById('search-btn-register').addEventListener('click', function() {
+        document.getElementById('search-btn-register').addEventListener('click', async function() {
             const searchNumber = document.getElementById('search-animal-number-register').value.trim();
             if (searchNumber) {
-                const foundAnimal = animals.find(animal => animal.number === searchNumber);
-                if (foundAnimal) {
-                    fillAnimalForm(foundAnimal);
-                    alert(`Animal encontrado!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
-                } else {
-                    alert('Animal não encontrado no cadastro.');
+                try {
+                    // Buscar bovinos da fazenda
+                    const response = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
+                    const bovinos = await response.json();
+                    
+                    // Procurar pelo número do brinco
+                    const foundAnimal = bovinos.find(b => b.numero_boi === searchNumber);
+                    
+                    if (foundAnimal) {
+                        // Preencher formulário com dados encontrados
+                        document.getElementById('animal-number').value = foundAnimal.numero_boi || '';
+                        
+                        // Formatar data de nascimento se existir
+                        if (foundAnimal.data_nascimento) {
+                            const dataNasc = new Date(foundAnimal.data_nascimento);
+                            const year = dataNasc.getFullYear();
+                            const month = String(dataNasc.getMonth() + 1).padStart(2, '0');
+                            const day = String(dataNasc.getDate()).padStart(2, '0');
+                            document.getElementById('birth-date').value = `${year}-${month}-${day}`;
+                        } else {
+                            document.getElementById('birth-date').value = '';
+                        }
+                        
+                        document.getElementById('breed').value = foundAnimal.raca || '';
+                        
+                        alert(`Animal encontrado!\nNúmero: ${foundAnimal.numero_boi}\nRaça: ${foundAnimal.raca || 'Não informada'}`);
+                    } else {
+                        alert('Animal não encontrado no cadastro.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar animal:', error);
+                    alert('Erro ao buscar animal. Verifique a conexão com o servidor.');
                 }
             } else {
                 alert('Por favor, digite o número do animal para buscar.');
@@ -1125,18 +1149,51 @@
         });
 
         // Busca de animal para baixa
-        document.getElementById('search-btn-discharge').addEventListener('click', function() {
+        document.getElementById('search-btn-discharge').addEventListener('click', async function() {
             const searchNumber = document.getElementById('search-animal-number-discharge').value.trim();
             if (searchNumber) {
-                const foundAnimal = animals.find(animal => animal.number === searchNumber);
-                if (foundAnimal) {
-                    fillAnimalForm(foundAnimal, 'discharge');
-                    alert(`Animal encontrado!\nNúmero: ${foundAnimal.number}\nPeso: ${foundAnimal.currentWeight} kg`);
-                } else {
-                    alert('Animal não encontrado no cadastro.');
+                try {
+                    // Buscar bovinos da fazenda
+                    const response = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
+                    const bovinos = await response.json();
+                    
+                    // Procurar pelo número do brinco
+                    const foundAnimal = bovinos.find(b => b.numero_boi === searchNumber);
+                    
+                    if (foundAnimal) {
+                        // Verificar se já tem baixa
+                        const baixaResponse = await fetch(`${API_BASE_URL}/baixas/bovino/${foundAnimal.id_bovino}`);
+                        const baixaData = await baixaResponse.json();
+                        
+                        if (baixaData.tem_baixa) {
+                            alert('Este bovino já possui uma baixa registrada!\n' +
+                                  'Motivo: ' + baixaData.baixa.motivo + '\n' +
+                                  'Data: ' + new Date(baixaData.baixa.data_baixa).toLocaleDateString('pt-BR'));
+                            return;
+                        }
+                        
+                        // Preencher formulário com dados encontrados
+                        document.getElementById('discharge-id-bovino').value = foundAnimal.id_bovino;
+                        document.getElementById('discharge-animal-number').value = foundAnimal.numero_boi || '';
+                        document.getElementById('discharge-breed').value = foundAnimal.raca || '';
+                        
+                        // Definir data atual como padrão
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('discharge-date').value = today;
+                        
+                        // Focar no campo de motivo
+                        document.getElementById('discharge-reason').focus();
+                        
+                        alert(`Bovino encontrado!\nNúmero: ${foundAnimal.numero_boi}\nRaça: ${foundAnimal.raca || 'Não informada'}`);
+                    } else {
+                        alert('Bovino não encontrado no cadastro.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar bovino:', error);
+                    alert('Erro ao buscar bovino. Verifique a conexão com o servidor.');
                 }
             } else {
-                alert('Por favor, digite o número do animal para buscar.');
+                alert('Por favor, digite o número do brinco para buscar.');
             }
         });
 
@@ -1163,14 +1220,69 @@
             }
         });
 
+        // Formulário de pesagem
+        document.getElementById('weighing-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const idBovino = document.getElementById('weighing-id-bovino').value;
+            const peso = parseFloat(document.getElementById('weighing-weight').value);
+            const dataPesagem = document.getElementById('weighing-date').value;
+            const observacao = document.getElementById('weighing-observation').value.trim();
+
+            if (!idBovino) {
+                alert('Por favor, busque um bovino primeiro.');
+                return;
+            }
+
+            if (!peso || !dataPesagem) {
+                alert('Por favor, preencha peso e data da pesagem.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/pesagens`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_bovino: idBovino,
+                        peso: peso,
+                        data_pesagem: dataPesagem,
+                        observacao: observacao || null
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Limpar apenas os campos de peso e observação
+                    document.getElementById('weighing-weight').value = '';
+                    document.getElementById('weighing-observation').value = '';
+                    
+                    // Recarregar dados da fazenda
+                    await initializeFazenda();
+                    
+                    alert('Pesagem registrada com sucesso!');
+                } else {
+                    alert('Erro ao registrar pesagem: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao registrar pesagem');
+            }
+        });
+
         // Formulário de cadastro de bovino
         document.getElementById('register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const animalNumber = document.getElementById('animal-number').value;
-            const currentWeight = parseFloat(document.getElementById('current-weight').value);
+            const animalNumber = document.getElementById('animal-number').value.trim();
             const birthDate = document.getElementById('birth-date').value;
             const breed = document.getElementById('breed').value;
+
+            if (!animalNumber) {
+                alert('Por favor, preencha o número do brinco.');
+                return;
+            }
 
             try {
                 const response = await fetch(`${API_BASE_URL}/cadastrar-bovino`, {
@@ -1179,27 +1291,16 @@
                     body: JSON.stringify({
                         id_fazenda: fazendaId,
                         numero_brinco: animalNumber,
-                        peso: currentWeight,
-                        data_nascimento: birthDate,
-                        raca: breed
+                        data_nascimento: birthDate || null,
+                        raca: breed || null
                     })
                 });
 
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Adicionar animal ao array local
-                    animals.push({
-                        number: animalNumber,
-                        birthDate: birthDate,
-                        currentWeight: currentWeight,
-                        breed: breed,
-                        weightHistory: [{ date: new Date().toISOString().split('T')[0], weight: currentWeight }]
-                    });
-
-                    herdData.animals += 1;
-                    herdData.weight += currentWeight;
-                    updateDisplay();
+                    // Recarregar dados da fazenda
+                    await initializeFazenda();
                     this.reset();
                     alert('Bovino cadastrado com sucesso!');
                 } else {
@@ -1215,41 +1316,48 @@
         document.getElementById('discharge-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const animalNumber = document.getElementById('discharge-animal-number').value;
-            const reason = document.getElementById('discharge-reason').value;
-            const observation = document.getElementById('discharge-observation').value;
+            const idBovino = document.getElementById('discharge-id-bovino').value;
+            const motivo = document.getElementById('discharge-reason').value;
+            const dataBaixa = document.getElementById('discharge-date').value;
+            const observacao = document.getElementById('discharge-observation').value.trim();
 
-            const animal = animals.find(a => a.number === animalNumber);
-            
-            if (!animal) {
-                alert('Animal não encontrado');
+            if (!idBovino) {
+                alert('Por favor, busque um bovino primeiro.');
+                return;
+            }
+
+            if (!motivo || !dataBaixa) {
+                alert('Por favor, preencha motivo e data da baixa.');
+                return;
+            }
+
+            // Confirmação antes de registrar baixa
+            if (!confirm('Tem certeza que deseja registrar esta baixa?\nEsta ação não poderá ser desfeita.')) {
                 return;
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/bovino/${animal.id}/baixa`, {
-                    method: 'PUT',
+                const response = await fetch(`${API_BASE_URL}/baixas`, {
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        motivo: reason,
-                        observacao: observation
+                        id_bovino: idBovino,
+                        motivo: motivo,
+                        data_baixa: dataBaixa,
+                        observacao: observacao || null
                     })
                 });
 
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Remover animal do array local
-                    const index = animals.findIndex(a => a.number === animalNumber);
-                    if (index !== -1) {
-                        herdData.weight -= animals[index].currentWeight;
-                        animals.splice(index, 1);
-                    }
-
-                    herdData.discharges += 1;
-                    herdData.animals = Math.max(0, herdData.animals - 1);
-                    updateDisplay();
+                    // Limpar formulário
                     this.reset();
+                    document.getElementById('discharge-id-bovino').value = '';
+                    
+                    // Recarregar dados da fazenda
+                    await initializeFazenda();
+                    
                     alert('Baixa registrada com sucesso!');
                 } else {
                     alert('Erro ao registrar baixa: ' + result.message);

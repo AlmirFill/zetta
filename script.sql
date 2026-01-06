@@ -108,6 +108,24 @@ INSERT INTO `pesagens` (`id_pesagem`, `id_bovino`, `peso`, `data_pesagem`, `obse
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `baixas`
+--
+
+DROP TABLE IF EXISTS `baixas`;
+CREATE TABLE IF NOT EXISTS `baixas` (
+  `id_baixa` int NOT NULL AUTO_INCREMENT,
+  `id_bovino` int NOT NULL,
+  `motivo` varchar(100) NOT NULL,
+  `data_baixa` date NOT NULL,
+  `observacao` text,
+  `criado_em` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_baixa`),
+  KEY `fk_baixas_bovino` (`id_bovino`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `usuarios`
 --
 

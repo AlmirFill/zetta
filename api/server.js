@@ -109,10 +109,10 @@ app.post('/cadastrar-fazenda', async (req, res) => {
 //-------------------------------------------------------------------------------------
 // 📌 4 - Cadastro de Bovino
 app.post('/cadastrar-bovino', async (req, res) => {
-    const { id_fazenda, numero_brinco, peso, data_nascimento, raca } = req.body;
+    const { id_fazenda, numero_brinco, data_nascimento, raca } = req.body;
 
-    if (!id_fazenda || !numero_brinco || !peso || !data_nascimento) {
-        return res.status(400).json({ success: false, message: 'ID da fazenda, número do brinco, peso e data de nascimento são obrigatórios.' });
+    if (!id_fazenda || !numero_brinco) {
+        return res.status(400).json({ success: false, message: 'ID da fazenda e número do brinco são obrigatórios.' });
     }
 
     try {
@@ -126,8 +126,8 @@ app.post('/cadastrar-bovino', async (req, res) => {
         }
 
         await pool.execute(
-            'INSERT INTO bovinos (id_fazenda, numero_boi, peso, data_nascimento, raca) VALUES (?, ?, ?, ?, ?)',
-            [id_fazenda, numero_brinco, peso, data_nascimento, raca || null]
+            'INSERT INTO bovinos (id_fazenda, numero_boi, data_nascimento, raca) VALUES (?, ?, ?, ?)',
+            [id_fazenda, numero_brinco, data_nascimento || null, raca || null]
         );
 
         res.status(201).json({ success: true, message: 'Bovino cadastrado com sucesso!' });
