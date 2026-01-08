@@ -190,6 +190,36 @@
             flex: 1;
         }
 
+        .modal-search {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+            z-index: 10;
+        }
+
+        .modal-search input {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>') no-repeat 15px center;
+        }
+
+        .modal-search input:focus {
+            outline: none;
+            border-color: #2d6a38;
+            box-shadow: 0 0 0 3px rgba(45, 106, 56, 0.1);
+        }
+
+        .modal-list-container {
+            /* Container para os itens da lista */
+        }
+
         .list-item {
             background: linear-gradient(135deg, #f8faf9 0%, #ffffff 100%);
             padding: 20px;
@@ -2064,15 +2094,23 @@
                     return;
                 }
 
-                let content = '';
+                let content = `
+                    <div class="modal-search">
+                        <input type="text" id="search-bovinos" placeholder="Buscar por número, raça ou ID..." autocomplete="off">
+                    </div>
+                    <div class="modal-list-container" id="bovinos-list-container">
+                `;
+                
                 bovinos.forEach((bovino, index) => {
                     const dataNasc = bovino.data_nascimento ? new Date(bovino.data_nascimento).toLocaleDateString('pt-BR') : 'Não informada';
+                    const numero = bovino.numero_boi || bovino.numero_brinco || 'S/N';
+                    const raca = bovino.raca || 'Sem raça';
                     
                     content += `
-                        <div class="list-item">
+                        <div class="list-item" data-search="${numero.toLowerCase()} ${raca.toLowerCase()} ${bovino.id_bovino}">
                             <div class="list-item-header">
-                                <div class="list-item-title">🐄 Bovino #${bovino.numero_boi || bovino.numero_brinco || 'S/N'}</div>
-                                <div class="list-item-badge">${bovino.raca || 'Sem raça'}</div>
+                                <div class="list-item-title">🐄 Bovino #${numero}</div>
+                                <div class="list-item-badge">${raca}</div>
                             </div>
                             <div class="list-item-info">
                                 <div class="list-item-field">
@@ -2091,8 +2129,21 @@
                         </div>
                     `;
                 });
+                
+                content += '</div>';
 
                 openModal(`Lista de Bovinos Ativos (${bovinos.length})`, content);
+                
+                // Adicionar evento de busca
+                setTimeout(() => {
+                    const searchInput = document.getElementById('search-bovinos');
+                    if (searchInput) {
+                        searchInput.addEventListener('input', (e) => {
+                            filterList(e.target.value, 'bovinos-list-container');
+                        });
+                        searchInput.focus();
+                    }
+                }, 100);
 
             } catch (error) {
                 hideLoading();
@@ -2121,14 +2172,22 @@
                     return;
                 }
 
-                let content = '';
+                let content = `
+                    <div class="modal-search">
+                        <input type="text" id="search-baixas" placeholder="Buscar por número, motivo, raça ou ID..." autocomplete="off">
+                    </div>
+                    <div class="modal-list-container" id="baixas-list-container">
+                `;
+                
                 data.baixas.forEach((baixa) => {
                     const dataBaixa = new Date(baixa.data_baixa).toLocaleDateString('pt-BR');
+                    const numero = baixa.numero_boi || 'S/N';
+                    const raca = baixa.raca || 'Não informada';
                     
                     content += `
-                        <div class="list-item">
+                        <div class="list-item" data-search="${numero.toLowerCase()} ${baixa.motivo.toLowerCase()} ${raca.toLowerCase()} ${baixa.id_bovino} ${dataBaixa}">
                             <div class="list-item-header">
-                                <div class="list-item-title">🐄 Bovino #${baixa.numero_boi || 'S/N'}</div>
+                                <div class="list-item-title">🐄 Bovino #${numero}</div>
                                 <div class="list-item-badge" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">${baixa.motivo}</div>
                             </div>
                             <div class="list-item-info">
@@ -2142,7 +2201,7 @@
                                 </div>
                                 <div class="list-item-field">
                                     <span class="list-item-label">Raça</span>
-                                    <span class="list-item-value">${baixa.raca || 'Não informada'}</span>
+                                    <span class="list-item-value">${raca}</span>
                                 </div>
                                 ${baixa.observacao ? `
                                 <div class="list-item-field" style="grid-column: 1 / -1;">
@@ -2154,13 +2213,61 @@
                         </div>
                     `;
                 });
+                
+                content += '</div>';
 
                 openModal(`Lista de Baixas (${data.baixas.length})`, content);
+                
+                // Adicionar evento de busca
+                setTimeout(() => {
+                    const searchInput = document.getElementById('search-baixas');
+                    if (searchInput) {
+                        searchInput.addEventListener('input', (e) => {
+                            filterList(e.target.value, 'baixas-list-container');
+                        });
+                        searchInput.focus();
+                    }
+                }, 100);
 
             } catch (error) {
                 hideLoading();
                 console.error('Erro ao buscar baixas:', error);
                 alert('Erro ao carregar lista de baixas.');
+            }
+        }
+
+        // Função para filtrar lista de itens
+        function filterList(searchTerm, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const items = container.querySelectorAll('.list-item');
+            const term = searchTerm.toLowerCase().trim();
+            let visibleCount = 0;
+            
+            items.forEach(item => {
+                const searchData = item.getAttribute('data-search') || '';
+                if (searchData.includes(term)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Mostrar mensagem se nenhum item for encontrado
+            let noResultsMsg = container.querySelector('.no-results-message');
+            if (visibleCount === 0) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.className = 'no-data no-results-message';
+                    noResultsMsg.textContent = '🔍 Nenhum resultado encontrado';
+                    container.appendChild(noResultsMsg);
+                }
+            } else {
+                if (noResultsMsg) {
+                    noResultsMsg.remove();
+                }
             }
         }
 
