@@ -43,6 +43,231 @@
             z-index: 0;
         }
 
+        /* Loading Screen */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(30, 70, 32, 0.1);
+            border-top: 5px solid #1e4620;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #1e4620;
+            font-weight: 600;
+            animation: pulse-text 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .loading-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Modal de Listagem */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e4620 0%, #2d6a38 100%);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .list-item {
+            background: linear-gradient(135deg, #f8faf9 0%, #ffffff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(46, 125, 50, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .list-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.15);
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .list-item-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e4620;
+        }
+
+        .list-item-badge {
+            background: linear-gradient(135deg, #fdd835 0%, #fbc02d 100%);
+            color: #1e4620;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .list-item-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .list-item-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-item-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 2px;
+        }
+
+        .list-item-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .stat-card.clickable {
+            cursor: pointer;
+        }
+
+        .stat-card.clickable:active {
+            transform: translateY(-5px) scale(0.98);
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -927,6 +1152,12 @@
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-icon">🐄</div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Carregando dados da fazenda...</div>
+    </div>
     <div class="container">
         <!-- Header -->
         <header class="header">
@@ -936,11 +1167,11 @@
 
         <!-- Stats including Last Weighing in the same style -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card clickable" id="card-bovinos">
                 <div class="stat-label">BOVINOS</div>
                 <div class="stat-value" id="total-animals">143</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="card-baixas">
                 <div class="stat-label">BAIXAS</div>
                 <div class="stat-value" id="total-discharges">8</div>
             </div>
@@ -1167,6 +1398,19 @@
         </div>
     </div>
 
+    <!-- Modal de Listagem -->
+    <div class="modal-overlay" id="modal-list">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Listagem</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Conteúdo dinâmico -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // Define API_BASE_URL imediatamente (antes de qualquer outro script)
         window.API_BASE_URL = window.location.origin;
@@ -1203,10 +1447,14 @@
 
         // Inicializar dados da fazenda
         async function initializeFazenda() {
+            // Mostrar loading
+            showLoading();
+            
             // Obter ID do usuário do cookie
             idUsuario = getCookie('id_usuario');
             
             if (!idUsuario) {
+                hideLoading();
                 alert('ID do usuário não encontrado nos cookies. Redirecionando para login...');
                 window.location.href = '/login.html';
                 return;
@@ -1290,14 +1538,37 @@
                         }
 
                         updateDisplay();
+                        
+                        // Esconder loading após carregar tudo
+                        hideLoading();
                     }
                 } else {
+                    hideLoading();
                     alert('Nenhuma fazenda encontrada para o usuário. Redirecionando para home...');
                     window.location.href = '/';
                 }
             } catch (error) {
+                hideLoading();
                 console.error('Erro ao buscar dados das fazendas:', error);
                 alert('Erro ao conectar com a API. Verifique se o servidor está rodando em ' + API_BASE_URL);
+            }
+        }
+
+        // Funções de controle do loading
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('hidden');
+            }
+        }
+
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) {
+                // Pequeno delay para melhor UX
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden');
+                }, 300);
             }
         }
 
@@ -1738,6 +2009,160 @@
                 alert('Erro ao registrar baixa');
             }
         });
+
+        // Event listeners para os cards clicáveis
+        document.getElementById('card-bovinos')?.addEventListener('click', async () => {
+            await showBovinosList();
+        });
+
+        document.getElementById('card-baixas')?.addEventListener('click', async () => {
+            await showBaixasList();
+        });
+
+        // Fechar modal
+        document.getElementById('modal-close')?.addEventListener('click', () => {
+            closeModal();
+        });
+
+        document.getElementById('modal-list')?.addEventListener('click', (e) => {
+            if (e.target.id === 'modal-list') {
+                closeModal();
+            }
+        });
+
+        // Função para abrir modal
+        function openModal(title, content) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal-list').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Função para fechar modal
+        function closeModal() {
+            document.getElementById('modal-list').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Função para exibir lista de bovinos
+        async function showBovinosList() {
+            if (!fazendaId) {
+                alert('Fazenda não identificada.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bovinos/ativos/${fazendaId}`);
+                const bovinos = await response.json();
+
+                hideLoading();
+
+                if (!Array.isArray(bovinos) || bovinos.length === 0) {
+                    openModal('Lista de Bovinos Ativos', '<div class="no-data">📋 Nenhum bovino ativo cadastrado</div>');
+                    return;
+                }
+
+                let content = '';
+                bovinos.forEach((bovino, index) => {
+                    const dataNasc = bovino.data_nascimento ? new Date(bovino.data_nascimento).toLocaleDateString('pt-BR') : 'Não informada';
+                    
+                    content += `
+                        <div class="list-item">
+                            <div class="list-item-header">
+                                <div class="list-item-title">🐄 Bovino #${bovino.numero_boi || bovino.numero_brinco || 'S/N'}</div>
+                                <div class="list-item-badge">${bovino.raca || 'Sem raça'}</div>
+                            </div>
+                            <div class="list-item-info">
+                                <div class="list-item-field">
+                                    <span class="list-item-label">ID</span>
+                                    <span class="list-item-value">${bovino.id_bovino}</span>
+                                </div>
+                                <div class="list-item-field">
+                                    <span class="list-item-label">Data Nascimento</span>
+                                    <span class="list-item-value">${dataNasc}</span>
+                                </div>
+                                <div class="list-item-field">
+                                    <span class="list-item-label">Peso Atual</span>
+                                    <span class="list-item-value">${bovino.peso ? bovino.peso + ' kg' : 'Não pesado'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                openModal(`Lista de Bovinos Ativos (${bovinos.length})`, content);
+
+            } catch (error) {
+                hideLoading();
+                console.error('Erro ao buscar bovinos:', error);
+                alert('Erro ao carregar lista de bovinos.');
+            }
+        }
+
+        // Função para exibir lista de baixas
+        async function showBaixasList() {
+            if (!fazendaId) {
+                alert('Fazenda não identificada.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/baixas/fazenda/${fazendaId}`);
+                const data = await response.json();
+
+                hideLoading();
+
+                if (!data.success || !Array.isArray(data.baixas) || data.baixas.length === 0) {
+                    openModal('Lista de Baixas', '<div class="no-data">📋 Nenhuma baixa registrada</div>');
+                    return;
+                }
+
+                let content = '';
+                data.baixas.forEach((baixa) => {
+                    const dataBaixa = new Date(baixa.data_baixa).toLocaleDateString('pt-BR');
+                    
+                    content += `
+                        <div class="list-item">
+                            <div class="list-item-header">
+                                <div class="list-item-title">🐄 Bovino #${baixa.numero_boi || 'S/N'}</div>
+                                <div class="list-item-badge" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">${baixa.motivo}</div>
+                            </div>
+                            <div class="list-item-info">
+                                <div class="list-item-field">
+                                    <span class="list-item-label">ID Bovino</span>
+                                    <span class="list-item-value">${baixa.id_bovino}</span>
+                                </div>
+                                <div class="list-item-field">
+                                    <span class="list-item-label">Data da Baixa</span>
+                                    <span class="list-item-value">${dataBaixa}</span>
+                                </div>
+                                <div class="list-item-field">
+                                    <span class="list-item-label">Raça</span>
+                                    <span class="list-item-value">${baixa.raca || 'Não informada'}</span>
+                                </div>
+                                ${baixa.observacao ? `
+                                <div class="list-item-field" style="grid-column: 1 / -1;">
+                                    <span class="list-item-label">Observação</span>
+                                    <span class="list-item-value">${baixa.observacao}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                openModal(`Lista de Baixas (${data.baixas.length})`, content);
+
+            } catch (error) {
+                hideLoading();
+                console.error('Erro ao buscar baixas:', error);
+                alert('Erro ao carregar lista de baixas.');
+            }
+        }
 
         // Inicializar ao carregar a página
         document.addEventListener('DOMContentLoaded', async () => {

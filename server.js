@@ -379,7 +379,7 @@ app.get('/pesagens/fazenda/:id_fazenda', async (req, res) => {
 });
 
 //-------------------------------------------------------------------------------------
-// 📌 13 - Obter Peso Total do Rebanho
+// 📌 13 - Obter Peso Total do Rebanho (APENAS BOVINOS ATIVOS - SEM BAIXA)
 app.get('/rebanho/peso-total/:id_fazenda', async (req, res) => {
     const { id_fazenda } = req.params;
 
@@ -388,7 +388,9 @@ app.get('/rebanho/peso-total/:id_fazenda', async (req, res) => {
             `SELECT SUM(p.peso) as peso_total
              FROM pesagens p
              JOIN bovinos b ON p.id_bovino = b.id_bovino
+             LEFT JOIN baixas bx ON b.id_bovino = bx.id_bovino
              WHERE b.id_fazenda = ?
+             AND bx.id_baixa IS NULL
              AND p.id_pesagem IN (
                  SELECT MAX(p2.id_pesagem)
                  FROM pesagens p2
@@ -498,15 +500,28 @@ app.get('/baixas/fazenda/:id_fazenda', async (req, res) => {
 });
 
 //-------------------------------------------------------------------------------------
-// 📌 5.1 - Listar Bovinos ATIVOS de uma Fazenda (sem baixa)
+// 📌 5.1 - Listar Bovinos ATIVOS de uma Fazenda (sem baixa) COM ÚLTIMA PESAGEM
 app.get('/bovinos/ativos/:id_fazenda', async (req, res) => {
     const { id_fazenda } = req.params;
 
     try {
         const [rows] = await pool.execute(
-            `SELECT b.* 
+            `SELECT 
+                b.*,
+                p.peso,
+                p.data_pesagem,
+                p.observacao as observacao_pesagem
              FROM bovinos b
              LEFT JOIN baixas bx ON b.id_bovino = bx.id_bovino
+             LEFT JOIN (
+                 SELECT p1.*
+                 FROM pesagens p1
+                 INNER JOIN (
+                     SELECT id_bovino, MAX(id_pesagem) as max_id
+                     FROM pesagens
+                     GROUP BY id_bovino
+                 ) p2 ON p1.id_bovino = p2.id_bovino AND p1.id_pesagem = p2.max_id
+             ) p ON b.id_bovino = p.id_bovino
              WHERE b.id_fazenda = ? AND bx.id_baixa IS NULL
              ORDER BY b.numero_boi`,
             [id_fazenda]
