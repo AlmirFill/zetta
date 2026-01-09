@@ -220,6 +220,58 @@
             /* Container para os itens da lista */
         }
 
+        /* Estilos específicos para Pesagem Mobile */
+        #weighing-tab input[type="text"],
+        #weighing-tab input[type="number"],
+        #weighing-tab input[type="date"] {
+            font-size: 18px; /* Evita zoom automático no iOS */
+            padding: 16px 20px;
+            height: 56px; /* Tamanho touch-friendly */
+        }
+
+        #weighing-tab .submit-btn {
+            height: 60px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 25px;
+        }
+
+        #weighing-tab .form-grid {
+            gap: 20px;
+        }
+
+        #weighing-tab label {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            #weighing-tab input[type="text"],
+            #weighing-tab input[type="number"],
+            #weighing-tab input[type="date"] {
+                font-size: 20px;
+                padding: 18px 20px;
+                height: 60px;
+            }
+
+            #weighing-tab .submit-btn {
+                height: 70px;
+                font-size: 1.4rem;
+                width: 100%;
+            }
+
+            #weighing-tab .form-grid {
+                gap: 25px;
+            }
+
+            #toggle-optional-fields {
+                width: 100%;
+                padding: 15px 20px !important;
+                font-size: 1rem !important;
+            }
+        }
+
         .list-item {
             background: linear-gradient(135deg, #f8faf9 0%, #ffffff 100%);
             padding: 20px;
@@ -1224,14 +1276,98 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" data-tab="register">Cadastrar Bovino</button>
-            <button class="tab" data-tab="weighing">Pesagem</button>
+            <button class="tab active" data-tab="weighing">⚖️ Pesagem</button>
+            <button class="tab" data-tab="register">Cadastrar Bovino</button>
             <button class="tab" data-tab="discharge">Baixa</button>
             <button class="tab" data-tab="evolution">Evolução</button>
         </div>
 
         <!-- Tab Content -->
-        <div class="tab-content active" id="register-tab">
+        <div class="tab-content active" id="weighing-tab">
+            <h2 class="tab-title">⚖️ Pesagem Rápida</h2>
+            
+            <!-- Weighing Form -->
+            <form id="weighing-form">
+                <input type="hidden" id="weighing-id-bovino">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="weighing-animal-number">Número do Brinco *</label>
+                        <input 
+                            type="text" 
+                            id="weighing-animal-number" 
+                            placeholder="Ex: 001" 
+                            required 
+                            autofocus
+                            autocomplete="off"
+                            inputmode="numeric"
+                            pattern="[0-9]*">
+                    </div>
+                    <div class="form-group">
+                        <label for="weighing-weight">Peso (kg) *</label>
+                        <input 
+                            type="number" 
+                            id="weighing-weight" 
+                            placeholder="Ex: 450" 
+                            min="1" 
+                            step="0.1" 
+                            required
+                            inputmode="decimal">
+                    </div>
+                </div>
+                
+                <!-- Campos opcionais (expandível) -->
+                <div style="margin: 20px 0; text-align: center;">
+                    <button 
+                        type="button" 
+                        id="toggle-optional-fields" 
+                        style="background: none; border: 2px solid #2d6a38; color: #2d6a38; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 0.95rem; min-height: 48px;" 
+                        onmouseover="this.style.background='#2d6a38'; this.style.color='white';" 
+                        onmouseout="this.style.background='none'; this.style.color='#2d6a38';">
+                        ➕ Campos Opcionais (Cadastro/Raça/Obs)
+                    </button>
+                </div>
+                
+                <div id="optional-fields" style="display: none;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="weighing-breed">Raça</label>
+                            <select id="weighing-breed" style="font-size: 18px; padding: 16px 20px; height: 56px;">
+                                <option value="">Selecione...</option>
+                                <option value="nelore">Nelore</option>
+                                <option value="angus">Angus</option>
+                                <option value="brangus">Brangus</option>
+                                <option value="hereford">Hereford</option>
+                                <option value="charoles">Charolês</option>
+                                <option value="simental">Simental</option>
+                                <option value="brahman">Brahman</option>
+                                <option value="gir">Gir</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="weighing-birth-date">Data Nascimento</label>
+                            <input type="date" id="weighing-birth-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="weighing-date">Data da Pesagem</label>
+                            <input type="date" id="weighing-date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="weighing-observation">Observação</label>
+                        <textarea id="weighing-observation" placeholder="Digite observações sobre a pesagem..."></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn" style="font-size: 1.2rem; padding: 18px 40px;">⚖️ Registrar Pesagem</button>
+                <p style="text-align: center; color: #666; margin-top: 15px; font-size: 0.95rem; line-height: 1.5;">
+                    💡 <strong>Novo bovino?</strong><br>
+                    Digite o número e ele será cadastrado automaticamente!
+                </p>
+            </form>
+        </div>
+
+        <div class="tab-content" id="register-tab">
             <h2 class="tab-title">Cadastro de Bovino</h2>
             
             <!-- Search Section -->
@@ -1271,47 +1407,6 @@
                     </div>
                 </div>
                 <button type="submit" class="submit-btn">Cadastrar Bovino</button>
-            </form>
-        </div>
-
-        <div class="tab-content" id="weighing-tab">
-            <h2 class="tab-title">Registrar Pesagem</h2>
-            
-            <!-- Search Section -->
-            <div class="search-section">
-                <h3>Buscar Bovino para Pesagem</h3>
-                <div class="search-group">
-                    <input type="text" id="search-animal-number-weighing" placeholder="Digite o número do brinco...">
-                    <button class="search-btn" id="search-btn-weighing">Buscar</button>
-                </div>
-            </div>
-
-            <!-- Weighing Form -->
-            <form id="weighing-form">
-                <input type="hidden" id="weighing-id-bovino">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="weighing-animal-number">Número do Brinco *</label>
-                        <input type="text" id="weighing-animal-number" placeholder="Ex: 001" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="weighing-breed">Raça</label>
-                        <input type="text" id="weighing-breed" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="weighing-weight">Peso (kg) *</label>
-                        <input type="number" id="weighing-weight" placeholder="Ex: 450" min="1" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="weighing-date">Data da Pesagem *</label>
-                        <input type="date" id="weighing-date" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="weighing-observation">Observação</label>
-                    <textarea id="weighing-observation" placeholder="Digite observações sobre a pesagem..."></textarea>
-                </div>
-                <button type="submit" class="submit-btn">Registrar Pesagem</button>
             </form>
         </div>
 
@@ -1740,41 +1835,110 @@
             }
         });
 
-        // Busca de animal para pesagem
-        document.getElementById('search-btn-weighing').addEventListener('click', async function() {
-            const searchNumber = document.getElementById('search-animal-number-weighing').value.trim();
-            if (searchNumber) {
-                try {
-                    // Buscar bovinos da fazenda
-                    const response = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
-                    const bovinos = await response.json();
-                    
-                    // Procurar pelo número do brinco
-                    const foundAnimal = bovinos.find(b => b.numero_boi === searchNumber);
-                    
-                    if (foundAnimal) {
-                        // Preencher formulário com dados encontrados
-                        document.getElementById('weighing-id-bovino').value = foundAnimal.id_bovino;
-                        document.getElementById('weighing-animal-number').value = foundAnimal.numero_boi || '';
-                        document.getElementById('weighing-breed').value = foundAnimal.raca || '';
-                        
-                        // Definir data atual como padrão
-                        const today = new Date().toISOString().split('T')[0];
-                        document.getElementById('weighing-date').value = today;
-                        
-                        // Focar no campo de peso
-                        document.getElementById('weighing-weight').focus();
-                        
-                        alert(`Bovino encontrado!\nNúmero: ${foundAnimal.numero_boi}\nRaça: ${foundAnimal.raca || 'Não informada'}`);
-                    } else {
-                        alert('Bovino não encontrado no cadastro.');
-                    }
-                } catch (error) {
-                    console.error('Erro ao buscar bovino:', error);
-                    alert('Erro ao buscar bovino. Verifique a conexão com o servidor.');
-                }
+        // Toggle campos opcionais
+        document.getElementById('toggle-optional-fields')?.addEventListener('click', function() {
+            const optionalFields = document.getElementById('optional-fields');
+            if (optionalFields.style.display === 'none') {
+                optionalFields.style.display = 'block';
+                this.textContent = '➖ Ocultar Campos Opcionais';
             } else {
-                alert('Por favor, digite o número do brinco para buscar.');
+                optionalFields.style.display = 'none';
+                this.textContent = '➕ Campos Opcionais (Cadastro/Raça/Obs)';
+            }
+        });
+
+        // Definir data atual como padrão no campo de pesagem
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('weighing-date').value = today;
+
+        // Formulário de pesagem com cadastro automático
+        document.getElementById('weighing-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const numeroBrinco = document.getElementById('weighing-animal-number').value.trim();
+            const peso = parseFloat(document.getElementById('weighing-weight').value);
+            const dataPesagem = document.getElementById('weighing-date').value;
+            const observacao = document.getElementById('weighing-observation').value.trim();
+            const raca = document.getElementById('weighing-breed').value;
+            const dataNascimento = document.getElementById('weighing-birth-date').value;
+
+            if (!numeroBrinco || !peso || !dataPesagem) {
+                alert('Por favor, preencha número do brinco, peso e data da pesagem.');
+                return;
+            }
+
+            try {
+                // Verificar se o bovino existe
+                const bovinosResponse = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
+                const bovinos = await bovinosResponse.json();
+                let bovino = bovinos.find(b => b.numero_boi === numeroBrinco);
+                let idBovino = bovino?.id_bovino;
+
+                // Se não existir, cadastrar automaticamente
+                if (!bovino) {
+                    const cadastroResponse = await fetch(`${API_BASE_URL}/cadastrar-bovino`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id_fazenda: fazendaId,
+                            numero_brinco: numeroBrinco,
+                            data_nascimento: dataNascimento || null,
+                            raca: raca || null
+                        })
+                    });
+
+                    const cadastroResult = await cadastroResponse.json();
+                    
+                    if (!cadastroResult.success) {
+                        alert('Erro ao cadastrar bovino: ' + cadastroResult.message);
+                        return;
+                    }
+
+                    // Buscar novamente para obter o ID do bovino recém-cadastrado
+                    const bovinosResponse2 = await fetch(`${API_BASE_URL}/bovinos/${fazendaId}`);
+                    const bovinos2 = await bovinosResponse2.json();
+                    bovino = bovinos2.find(b => b.numero_boi === numeroBrinco);
+                    idBovino = bovino?.id_bovino;
+                    
+                    if (!idBovino) {
+                        alert('Erro ao obter ID do bovino cadastrado.');
+                        return;
+                    }
+                }
+
+                // Registrar a pesagem
+                const pesagemResponse = await fetch(`${API_BASE_URL}/pesagens`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_bovino: idBovino,
+                        peso: peso,
+                        data_pesagem: dataPesagem,
+                        observacao: observacao || null
+                    })
+                });
+
+                const pesagemResult = await pesagemResponse.json();
+                
+                if (pesagemResult.success) {
+                    // Limpar apenas os campos principais para próxima pesagem
+                    document.getElementById('weighing-animal-number').value = '';
+                    document.getElementById('weighing-weight').value = '';
+                    document.getElementById('weighing-observation').value = '';
+                    
+                    // Recarregar dados da fazenda
+                    await initializeFazenda();
+                    
+                    // Focar no campo de número para agilizar próxima pesagem
+                    document.getElementById('weighing-animal-number').focus();
+                    
+                    alert(bovino ? 'Pesagem registrada com sucesso!' : 'Bovino cadastrado e pesagem registrada com sucesso!');
+                } else {
+                    alert('Erro ao registrar pesagem: ' + pesagemResult.message);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao processar pesagem');
             }
         });
 
@@ -1889,57 +2053,6 @@
                 document.getElementById('chart-placeholder').style.display = 'block';
                 document.getElementById('pie-chart-section').style.display = 'none';
                 alert('Por favor, digite o número do animal para buscar.');
-            }
-        });
-
-        // Formulário de pesagem
-        document.getElementById('weighing-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const idBovino = document.getElementById('weighing-id-bovino').value;
-            const peso = parseFloat(document.getElementById('weighing-weight').value);
-            const dataPesagem = document.getElementById('weighing-date').value;
-            const observacao = document.getElementById('weighing-observation').value.trim();
-
-            if (!idBovino) {
-                alert('Por favor, busque um bovino primeiro.');
-                return;
-            }
-
-            if (!peso || !dataPesagem) {
-                alert('Por favor, preencha peso e data da pesagem.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/pesagens`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id_bovino: idBovino,
-                        peso: peso,
-                        data_pesagem: dataPesagem,
-                        observacao: observacao || null
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Limpar apenas os campos de peso e observação
-                    document.getElementById('weighing-weight').value = '';
-                    document.getElementById('weighing-observation').value = '';
-                    
-                    // Recarregar dados da fazenda
-                    await initializeFazenda();
-                    
-                    alert('Pesagem registrada com sucesso!');
-                } else {
-                    alert('Erro ao registrar pesagem: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao registrar pesagem');
             }
         });
 
